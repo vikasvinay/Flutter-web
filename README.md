@@ -1,6 +1,6 @@
 # article_firebase
 
-A new Flutter application.
+Add google-services.json file to android/app
 
 ## Getting Started
 
