@@ -23,6 +23,7 @@ AdminRepository _adminRepository = AdminRepository();
     return Scaffold(
       appBar: AppBar(
         title: Text("Admin home"),
+        automaticallyImplyLeading: false,
         actions: [
           Observer(builder: (_) {
             return TextButton.icon(

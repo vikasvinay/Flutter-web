@@ -23,7 +23,7 @@ class _AllProductsState extends State<AllProducts> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("${widget.categoryName}"),
+          title: Text("All Products"),
         ),
         body: PaginateFirestore(
           gridDelegate:
@@ -39,8 +39,6 @@ class _AllProductsState extends State<AllProducts> {
           itemBuilderType: PaginateBuilderType.gridView,
           itemBuilder:
               (int index, BuildContext context, DocumentSnapshot snap) {
-                print(snap.id);
-                print("llllllllll");
             Map<String, dynamic> data = snap.data();
             print(data['product_company']);
             return Column(
@@ -51,7 +49,7 @@ class _AllProductsState extends State<AllProducts> {
                   image: data['image_url'],
                   points: data['product_kp'],
                   price: data['product_price'],
-                  productName: data[''],
+                  productName: data['product_name'],
                   icon1: data['stainless_steel'],
                   icon2: data['safe_edge'],
                   icon4: data['reusable'],

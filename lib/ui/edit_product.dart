@@ -65,38 +65,38 @@ class _EditProductState extends State<EditProduct> {
   static String benefitsText = "";
 
   //// product Details
-  TextEditingController _imageUrl = TextEditingController(text: imageUrlText);
+  TextEditingController _imageUrl = TextEditingController();
   TextEditingController _productName =
-      TextEditingController(text: productNameText);
+      TextEditingController();
   // TextEditingController _productCategory = TextEditingController(text: );
   TextEditingController _productCompany =
-      TextEditingController(text: productCompanyText);
+      TextEditingController();
   TextEditingController _productPrice =
-      TextEditingController(text: productPriceText);
+      TextEditingController();
   TextEditingController _productemissions =
-      TextEditingController(text: produtEmissionText);
+      TextEditingController();
   TextEditingController _productplastic =
-      TextEditingController(text: productPlasticText);
-  TextEditingController _productKp = TextEditingController(text: productKpText);
+      TextEditingController();
+  TextEditingController _productKp = TextEditingController();
   // TextEditingController _about = TextEditingController(text: );
 
 //// About product _productemissions
   TextEditingController _madeSustainable =
-      TextEditingController(text: madeSustainableText);
+      TextEditingController();
   TextEditingController _madeNonSustainable =
-      TextEditingController(text: madeNonSustainableText);
+      TextEditingController();
   TextEditingController _disposalSustainable =
-      TextEditingController(text: disposalSustainableText);
+      TextEditingController();
   TextEditingController _disposalNonSustainable =
-      TextEditingController(text: disposalNonSustainable);
+      TextEditingController();
   TextEditingController _degradeSustainable =
-      TextEditingController(text: degradeSustainableText);
+      TextEditingController();
   TextEditingController _degradeNonSustainable =
-      TextEditingController(text: degradeNonSustainableText);
-  TextEditingController _about = TextEditingController(text: aboutText);
-  TextEditingController _material = TextEditingController(text: materialText);
-  TextEditingController _packing = TextEditingController(text: packingText);
-  TextEditingController _benefits = TextEditingController(text: benefitsText);
+      TextEditingController();
+  TextEditingController _about = TextEditingController();
+  TextEditingController _material = TextEditingController();
+  TextEditingController _packing = TextEditingController();
+  TextEditingController _benefits = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
   final ImagePicker _picker = ImagePicker();
@@ -148,47 +148,65 @@ class _EditProductState extends State<EditProduct> {
                   var item = snapshot.requireData;
                   print("has data");
                   print("${item.about}");
+                  _imageUrl.text = item.imageUrl;
+_productName.text = item.productName;
+_productCompany.text = item. productCompany;
+_productPrice.text = item. productPrice.toString();
+_productemissions.text = item.productemissions.toString() ;
+_productplastic.text = item.productplastic.toString() ;
+_productKp.text = item.productKp.toString() ;
+_madeSustainable.text = item.madeSustainable ;
+_madeNonSustainable.text = item.madeNonSustainable ;
+_disposalSustainable.text = item.disposalSustainable ;
+_disposalNonSustainable.text = item. disposalNonSustainable;
+_degradeSustainable.text = item.degradeSustainable ;
+_degradeNonSustainable.text = item. degradeNonSustainable;
+_about.text = item.about ;
+_material.text = item.material ;
+_packing.text = item.packing ;
+_benefits.text = item.benefits ;
                   return main(
-                      aboutText: item.about,
-                      benefitsText: item.benefits,
-                      degradeNonSustainableText: item.degradeNonSustainable,
-                      degradeSustainableText: item.degradeSustainable,
-                      disposalNonSustainable: item.disposalNonSustainable,
-                      disposalSustainableText: item.disposalSustainable,
-                      imageUrlText: item.imageUrl,
-                      madeNonSustainableText: item.madeNonSustainable,
-                      madeSustainableText: item.madeSustainable,
-                      materialText: item.material,
-                      packingText: item.packing,
-                      productCompanyText: item.productCompany,
-                      productKpText: item.productKp.toString(),
-                      productNameText: item.productName,
-                      productPlasticText: item.productplastic.toString(),
-                      productPriceText: item.productPrice.toString(),
-                      produtEmissionText: item.productemissions.toString());
+                      // aboutText: item.about,
+                      // benefitsText: item.benefits,
+                      // degradeNonSustainableText: item.degradeNonSustainable,
+                      // degradeSustainableText: item.degradeSustainable,
+                      // disposalNonSustainable: item.disposalNonSustainable,
+                      // disposalSustainableText: item.disposalSustainable,
+                      // imageUrlText: item.imageUrl,
+                      // madeNonSustainableText: item.madeNonSustainable,
+                      // madeSustainableText: item.madeSustainable,
+                      // materialText: item.material,
+                      // packingText: item.packing,
+                      // productCompanyText: item.productCompany,
+                      // productKpText: item.productKp.toString(),
+                      // productNameText: item.productName,
+                      // productPlasticText: item.productplastic.toString(),
+                      // productPriceText: item.productPrice.toString(),
+                      // produtEmissionText: item.productemissions.toString()
+                      );
                 })
             : main());
   }
 
-  Widget main({
-    String imageUrlText,
-    String productNameText,
-    String productCompanyText,
-    String productPriceText,
-    String produtEmissionText,
-    String productPlasticText,
-    String productKpText,
-    String madeSustainableText,
-    String madeNonSustainableText,
-    String disposalSustainableText,
-    String disposalNonSustainable,
-    String degradeSustainableText,
-    String degradeNonSustainableText,
-    String aboutText,
-    String materialText,
-    String packingText,
-    String benefitsText,
-  }) {
+  Widget main(
+    // String imageUrlText,
+    // String productNameText,
+    // String productCompanyText,
+    // String productPriceText,
+    // String produtEmissionText,
+    // String productPlasticText,
+    // String productKpText,
+    // String madeSustainableText,
+    // String madeNonSustainableText,
+    // String disposalSustainableText,
+    // String disposalNonSustainable,
+    // String degradeSustainableText,
+    // String degradeNonSustainableText,
+    // String aboutText,
+    // String materialText,
+    // String packingText,
+    // String benefitsText,
+  ) {
     return Form(
       key: _formKey,
       child: ListView(
@@ -919,7 +937,8 @@ class _EditProductState extends State<EditProduct> {
           "liked": 1,
           "benefits": _benefits.text.trim(),
         }, SetOptions(merge: true)).then((value) => clearText());
-      }else if(widget.productId == null){
+      }if(widget.productId != null){
+        print("has id");
         var doc =
             await FirebaseFirestore.instance.collection("admin_products").doc(widget.productId);
         if (_imageFile != null) {
@@ -935,9 +954,9 @@ class _EditProductState extends State<EditProduct> {
           }
         }
 
-        print("-------------$image------------");
+        print("-------------$image----$doc--------");
         await doc.update({
-          "product_id": doc.id,
+          "product_id": widget.productId,
           "image_url": _imageUrl.text.trim().length != 0
               ? _imageUrl.text.trim()
               : image != null
