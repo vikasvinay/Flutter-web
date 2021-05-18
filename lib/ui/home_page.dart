@@ -1,6 +1,7 @@
 import 'package:ecommerce_admin/services/login_service.dart';
 import 'package:ecommerce_admin/services/repository/admin_repository.dart';
 import 'package:ecommerce_admin/services/routing/page_names.dart';
+import 'package:ecommerce_admin/services/routing/route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -15,8 +16,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   Auth _auth = Auth();
-AdminRepository _adminRepository = AdminRepository();
-
+  AdminRepository _adminRepository = AdminRepository();
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +63,8 @@ AdminRepository _adminRepository = AdminRepository();
                     borderRadius: BorderRadius.circular(20.r)),
                 onPressed: () {
                   // print(FirebaseAuth.instance.currentUser.uid);
-                  Navigator.pushNamed(context, RouteNames.addProduct);
+                  FluroRoute.router.navigateTo(context, RouteNames.addProduct);
+                  // Navigator.pushNamed(context, RouteNames.addProduct);
                 },
                 elevation: 8,
                 child: Text(
@@ -83,7 +84,8 @@ AdminRepository _adminRepository = AdminRepository();
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20.r)),
                 onPressed: () {
-                  Navigator.pushNamed(context, RouteNames.categories);
+                  FluroRoute.router.navigateTo(context, RouteNames.categories);
+                  // Navigator.pushNamed(context, RouteNames.categories);
                 },
                 elevation: 8,
                 child: Text("Uploaded products",
@@ -122,7 +124,9 @@ AdminRepository _adminRepository = AdminRepository();
     super.didChangeDependencies();
     _auth = Provider.of<Auth>(context);
     disposer = reaction((_) => _auth.loggedOut, (loggedout) {
-      if (loggedout) Navigator.popUntil(context, ModalRoute.withName(RouteNames.login));
+      if (loggedout)
+        FluroRoute.router.navigateTo(context, RouteNames.login,
+            clearStack: true, replace: true);
     });
   }
 }

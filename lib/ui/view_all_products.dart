@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerce_admin/services/model.dart';
 import 'package:ecommerce_admin/services/repository/admin_repository.dart';
 import 'package:ecommerce_admin/services/routing/page_names.dart';
+import 'package:ecommerce_admin/services/routing/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ecommerce_admin/services/palette.dart';
@@ -63,11 +64,15 @@ class _AllProductsState extends State<AllProducts> {
                   children: [
                     MaterialButton(
                       onPressed: () {
-                        Navigator.pushNamed(
-                          context,
-                          RouteNames.editProduct,
-                          arguments: data['product_id'],
-                        );
+                        FluroRoute.router.navigateTo(
+                            context, RouteNames.editProduct,
+                            routeSettings:
+                                RouteSettings(arguments: data['product_id']));
+                        // Navigator.pushNamed(
+                        //   context,
+                        //   RouteNames.editProduct,
+                        //   arguments: data['product_id'],
+                        // );
                       },
                       child: Icon(Icons.edit),
                     ),

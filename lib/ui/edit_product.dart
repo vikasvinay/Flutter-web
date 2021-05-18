@@ -296,14 +296,14 @@ _benefits.text = item.benefits ;
                     children: [
                       TableRow(children: [
                         Text("Name: ", style: style()),
-                        textField(controller: _productName, hintName: ""),
+                        smallTextField(controller: _productName, hintName: "name"),
                         SizedBox(
                           height: 10.h,
                         ),
 
                         ///
                         Text("Company: ", style: style()),
-                        textField(controller: _productCompany, hintName: "")
+                        smallTextField(controller: _productCompany, hintName: "company name")
                       ]),
                       TableRow(children: [
                         SizedBox(
@@ -327,12 +327,12 @@ _benefits.text = item.benefits ;
                           "K.P after buying: ",
                           style: style(),
                         ),
-                        textField(controller: _productKp, hintName: ""),
+                        textField(controller: _productKp, hintName: "0"),
                         SizedBox(
                           height: 10.h,
                         ),
                         Text("Product price(₹): ", style: style()),
-                        intTextField(controller: _productPrice, hintName: "")
+                        intTextField(controller: _productPrice, hintName: "0")
                       ]),
                       TableRow(children: [
                         SizedBox(
@@ -353,16 +353,16 @@ _benefits.text = item.benefits ;
                       ]),
                       TableRow(children: [
                         Text(
-                          "plastic pollution(%): ",
+                          "less plastic pollution(%): ",
                           style: style(),
                         ),
-                        intTextField(controller: _productplastic, hintName: ""),
+                        intTextField(controller: _productplastic, hintName: "0"),
                         SizedBox(
                           height: 10.h,
                         ),
-                        Text("co2 emissions(%): ", style: style()),
+                        Text("less co2 emissions(%): ", style: style()),
                         intTextField(
-                            controller: _productemissions, hintName: "")
+                            controller: _productemissions, hintName: "0")
                       ]),
                     ],
                   ),
@@ -398,7 +398,7 @@ _benefits.text = item.benefits ;
                         onChanged: (AllCategories value) {
                           setState(() {
                             _categories = value;
-                            _categoryType = categories[value.index - 1];
+                            _categoryType = categories[value.index];
                           });
                           print(_categories == categoriesList[index]);
                           print(_categories);
@@ -836,6 +836,24 @@ _benefits.text = item.benefits ;
             ),
           )
         ],
+      ),
+    );
+  }
+
+  Widget smallTextField({String hintName, TextEditingController controller}) {
+    return Container(
+      width: 100.w,
+      child: TextFormField(
+        controller: controller,
+        maxLength: 15,
+        validator: (value) {
+          if (value.isEmpty || value == null || (value.trim()).length < 3) {
+            return "Can't be blank";
+          }
+          return null;
+        },
+        decoration: InputDecoration(
+            hintText: hintName, enabledBorder: OutlineInputBorder()),
       ),
     );
   }

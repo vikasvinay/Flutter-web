@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerce_admin/services/routing/page_names.dart';
+import 'package:ecommerce_admin/services/routing/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -76,8 +77,12 @@ class _CategoriesState extends State<Categories> {
                             borderRadius: BorderRadius.circular(20.r)),
                         onPressed: () {
                           // print(FirebaseAuth.instance.currentUser.uid);
-                          Navigator.pushNamed(context, RouteNames.allProducts,
-                              arguments: categoryList[index]['category']);
+                          FluroRoute.router.navigateTo(
+                              context, RouteNames.allProducts,
+                              routeSettings: RouteSettings(
+                                  arguments: categoryList[index]['category']));
+                          // Navigator.pushNamed(context, RouteNames.allProducts,
+                          //     arguments: categoryList[index]['category']);
                         },
                         elevation: 8,
                         child: Container(

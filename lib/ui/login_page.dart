@@ -1,5 +1,6 @@
 import 'package:ecommerce_admin/services/login_service.dart';
 import 'package:ecommerce_admin/services/routing/page_names.dart';
+import 'package:ecommerce_admin/services/routing/route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -190,7 +191,9 @@ class _LoginPageState extends State<LoginPage> {
     super.didChangeDependencies();
     _auth = Provider.of<Auth>(context);
     disposer = reaction((_) => _auth.loggedIn, (loggedIn) {
-      if (loggedIn) Navigator.pushReplacementNamed(context, RouteNames.home);
+      if (loggedIn)
+        FluroRoute.router.navigateTo(context, RouteNames.home,
+            clearStack: true, replace: true);
     });
   }
 }

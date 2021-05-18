@@ -41,5 +41,6 @@ class FluroRoute {
     router.define(RouteNames.editProduct, handler: _edit);
     router.define(RouteNames.addProduct, handler: _add);
     router.define(RouteNames.categories, handler: _categories);
+    router.notFoundHandler = _login;
   }
 }
