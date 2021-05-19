@@ -1,10 +1,8 @@
 import 'dart:async';
-import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerce_admin/services/routing/page_names.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart';
 import 'package:mobx/mobx.dart';
 
 part 'login_service.g.dart';
@@ -20,6 +18,9 @@ abstract class _Auth with Store {
   String password = "";
 
   @observable
+  bool noAccess = false;
+
+  @observable
   bool passwordVisible = false;
 
   @observable
@@ -33,6 +34,10 @@ abstract class _Auth with Store {
 
   @observable
   bool error = false;
+
+  @observable
+  String  pageState =
+      _auth.currentUser != null ? RouteNames.home : RouteNames.login;
 
   @computed
   bool get isEmailValid => RegExp(
@@ -71,8 +76,24 @@ abstract class _Auth with Store {
     }
 
     if (_auth.currentUser != null) {
-      loading = false;
-      loggedIn = true;
+      print(_auth.currentUser.uid);
+      DocumentSnapshot<Map<String, dynamic>> userAccess =
+          await FirebaseFirestore.instance
+              .collection('admin_products_access')
+              .doc(_auth.currentUser.uid)
+              .get();
+      if (!userAccess.exists ||
+          !userAccess.data().containsKey('access') ||
+          !await userAccess['access']) {
+        print(" no account");
+        await logout();
+        loading = false;
+        noAccess = true;
+      } else {
+        print("has account");
+        loggedIn = true;
+        loading = false;
+      }
     }
   }
 
@@ -82,60 +103,3 @@ abstract class _Auth with Store {
     loggedOut = true;
   }
 }
-
-// abstract class _Auth with Store {
-//   @observable
-//   String homePage = _auth.currentUser ?? RouteNames.login;
-
-//   @action
-//   Future loginWithEmail({String email, String password}) async {
-//     await _auth
-//         .signInWithEmailAndPassword(email: email, password: password)
-//         .then((value) {
-//       if (value.additionalUserInfo.providerId != null) {
-//         homePage = RouteNames.home;
-//       }
-//     });
-//   }
-
-//   ///logout
-//   @action
-//   Future logout() async {
-//     return await _auth.signOut();
-//   }
-// }
-
-// abstract class _Auth with Store {
-//   FirebaseAuth _auth = FirebaseAuth.instance;
-//   @observable
-//   String page = RouteNames.login;
-
-//   @action
-//   Future loginWithEmail({String email, String password}) async {
-//     try {
-//       print("in login");
-//       await _auth
-//           .signInWithEmailAndPassword(email: email, password: password)
-//           .then((value) {
-//         if (_auth.currentUser.uid != null) {
-//           print(_auth.currentUser.uid);
-//           return page = RouteNames.home;
-//         }
-//       });
-
-//       print(_auth.currentUser.uid);
-
-//       return page;
-//     } catch (e) {
-//       print("got exit");
-//       print(e);
-//       return e;
-
-//     }
-//   }
-
-//   Future logout() async {
-//     return await _auth.signOut();
-//   }
-  
-// }

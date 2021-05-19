@@ -12,28 +12,28 @@ mixin _$Auth on _Auth, Store {
   Computed<bool> _$isEmailValidComputed;
 
   @override
-  bool get isEmailValid => (_$isEmailValidComputed =
+  bool get isEmailValid => (_$isEmailValidComputed ??=
           Computed<bool>(() => super.isEmailValid, name: '_Auth.isEmailValid'))
       .value;
   Computed<bool> _$isPasswordValidComputed;
 
   @override
   bool get isPasswordValid =>
-      (_$isPasswordValidComputed = Computed<bool>(() => super.isPasswordValid,
+      (_$isPasswordValidComputed ??= Computed<bool>(() => super.isPasswordValid,
               name: '_Auth.isPasswordValid'))
           .value;
   Computed<Function> _$loginPressedComputed;
 
   @override
   Function get loginPressed =>
-      (_$loginPressedComputed = Computed<Function>(() => super.loginPressed,
+      (_$loginPressedComputed ??= Computed<Function>(() => super.loginPressed,
               name: '_Auth.loginPressed'))
           .value;
   Computed<Function> _$logoutPressedComputed;
 
   @override
   Function get logoutPressed =>
-      (_$logoutPressedComputed = Computed<Function>(() => super.logoutPressed,
+      (_$logoutPressedComputed ??= Computed<Function>(() => super.logoutPressed,
               name: '_Auth.logoutPressed'))
           .value;
 
@@ -64,6 +64,21 @@ mixin _$Auth on _Auth, Store {
   set password(String value) {
     _$passwordAtom.reportWrite(value, super.password, () {
       super.password = value;
+    });
+  }
+
+  final _$noAccessAtom = Atom(name: '_Auth.noAccess');
+
+  @override
+  bool get noAccess {
+    _$noAccessAtom.reportRead();
+    return super.noAccess;
+  }
+
+  @override
+  set noAccess(bool value) {
+    _$noAccessAtom.reportWrite(value, super.noAccess, () {
+      super.noAccess = value;
     });
   }
 
@@ -142,6 +157,21 @@ mixin _$Auth on _Auth, Store {
     });
   }
 
+  final _$pageStateAtom = Atom(name: '_Auth.pageState');
+
+  @override
+  String get pageState {
+    _$pageStateAtom.reportRead();
+    return super.pageState;
+  }
+
+  @override
+  set pageState(String value) {
+    _$pageStateAtom.reportWrite(value, super.pageState, () {
+      super.pageState = value;
+    });
+  }
+
   final _$loginAsyncAction = AsyncAction('_Auth.login');
 
   @override
@@ -196,11 +226,13 @@ mixin _$Auth on _Auth, Store {
     return '''
 email: ${email},
 password: ${password},
+noAccess: ${noAccess},
 passwordVisible: ${passwordVisible},
 loading: ${loading},
 loggedIn: ${loggedIn},
 loggedOut: ${loggedOut},
 error: ${error},
+pageState: ${pageState},
 isEmailValid: ${isEmailValid},
 isPasswordValid: ${isPasswordValid},
 loginPressed: ${loginPressed},

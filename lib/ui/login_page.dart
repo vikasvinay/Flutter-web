@@ -38,6 +38,17 @@ class _LoginPageState extends State<LoginPage> {
         }
       },
     );
+    Observer(
+      builder: (_) {
+        if (_auth.noAccess) {
+          return SnackBar(content: Text("Only admin can access this page  "));
+          // ScaffoldMessenger.of(context)
+          // .showSnackBar(SnackBar(content: Text("Invalid Email")));
+        } else {
+          return SnackBar(content: Text("Enter details.."));
+        }
+      },
+    );
 
     return Scaffold(
       backgroundColor: Colors.grey,
@@ -157,7 +168,18 @@ class _LoginPageState extends State<LoginPage> {
                       } else {
                         return Container();
                       }
-                    })
+                    }),
+                    Observer(
+                      builder: (_) {
+                        if (_auth.noAccess) {
+                          return Text("Only admin can access this page  ",
+                              style: TextStyle(
+                                  color: Colors.red, fontSize: 14.sp));
+                        } else {
+                          return Container();
+                        }
+                      },
+                    )
                   ],
                 ),
               ),
@@ -167,23 +189,6 @@ class _LoginPageState extends State<LoginPage> {
       )),
     );
   }
-
-  // void validate() async {
-  //   if (_formKey.currentState.validate()) {
-
-  //     // await FirebaseAuth.instance
-  //     //     .signInWithEmailAndPassword(
-  //     //         email: _email.text.trim(), password: _password.text.trim());
-
-  //     await _auth.loginWithEmail(email: _email.text.trim(), password: _password.text.trim()).then((value) {
-  //       // Navigator.pushNamedAndRemoveUntil(context, RouteNames.route, (route) => false);
-  //     });
-  //     print(_password.text.trim());
-  //   } else {
-  //     ScaffoldMessenger.of(context)
-  //         .showSnackBar(SnackBar(content: Text("Invalid Email")));
-  //   }
-  // }
 
   ReactionDisposer disposer;
   @override

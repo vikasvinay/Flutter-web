@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ecommerce_admin/services/model.dart';
+import 'package:ecommerce_admin/services/models/model.dart';
 import 'package:ecommerce_admin/services/repository/admin_repository.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -46,29 +46,12 @@ class _EditProductState extends State<EditProduct> {
     'Bathroom',
     'Stationary'
   ];
-  static String imageUrlText = "";
-  static String productNameText = "";
-  static String productCompanyText = "";
-  static String productPriceText = "";
-  static String produtEmissionText = "";
-  static String productPlasticText = "";
-  static String productKpText = "";
-  static String madeSustainableText = "";
-  static String madeNonSustainableText = "";
-  static String disposalSustainableText = "";
-  static String disposalNonSustainable = "";
-  static String degradeSustainableText = "";
-  static String degradeNonSustainableText = "";
-  static String aboutText = "";
-  static String materialText = "";
-  static String packingText = "";
-  static String benefitsText = "";
+
 
   //// product Details
   TextEditingController _imageUrl = TextEditingController();
   TextEditingController _productName =
       TextEditingController();
-  // TextEditingController _productCategory = TextEditingController(text: );
   TextEditingController _productCompany =
       TextEditingController();
   TextEditingController _productPrice =
@@ -78,7 +61,6 @@ class _EditProductState extends State<EditProduct> {
   TextEditingController _productplastic =
       TextEditingController();
   TextEditingController _productKp = TextEditingController();
-  // TextEditingController _about = TextEditingController(text: );
 
 //// About product _productemissions
   TextEditingController _madeSustainable =
@@ -166,46 +148,12 @@ _material.text = item.material ;
 _packing.text = item.packing ;
 _benefits.text = item.benefits ;
                   return main(
-                      // aboutText: item.about,
-                      // benefitsText: item.benefits,
-                      // degradeNonSustainableText: item.degradeNonSustainable,
-                      // degradeSustainableText: item.degradeSustainable,
-                      // disposalNonSustainable: item.disposalNonSustainable,
-                      // disposalSustainableText: item.disposalSustainable,
-                      // imageUrlText: item.imageUrl,
-                      // madeNonSustainableText: item.madeNonSustainable,
-                      // madeSustainableText: item.madeSustainable,
-                      // materialText: item.material,
-                      // packingText: item.packing,
-                      // productCompanyText: item.productCompany,
-                      // productKpText: item.productKp.toString(),
-                      // productNameText: item.productName,
-                      // productPlasticText: item.productplastic.toString(),
-                      // productPriceText: item.productPrice.toString(),
-                      // produtEmissionText: item.productemissions.toString()
                       );
                 })
             : main());
   }
 
   Widget main(
-    // String imageUrlText,
-    // String productNameText,
-    // String productCompanyText,
-    // String productPriceText,
-    // String produtEmissionText,
-    // String productPlasticText,
-    // String productKpText,
-    // String madeSustainableText,
-    // String madeNonSustainableText,
-    // String disposalSustainableText,
-    // String disposalNonSustainable,
-    // String degradeSustainableText,
-    // String degradeNonSustainableText,
-    // String aboutText,
-    // String materialText,
-    // String packingText,
-    // String benefitsText,
   ) {
     return Form(
       key: _formKey,
@@ -560,7 +508,6 @@ _benefits.text = item.benefits ;
                   width: 1.sw,
                   height: 20.h,
                   child: ListView(
-                    // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     scrollDirection: Axis.horizontal,
                     shrinkWrap: true,
                     children: [
@@ -706,7 +653,6 @@ _benefits.text = item.benefits ;
                   ),
                 ),
                 Container(
-                  // margin: EdgeInsets.only(left: 20.w),
                   width: 0.4.sw,
                   height: 0.1.sh,
                   child: TextFormField(
@@ -735,7 +681,6 @@ _benefits.text = item.benefits ;
                   ),
                 ),
                 Container(
-                  // margin: EdgeInsets.only(left: 20.w),
                   width: 0.4.sw,
                   height: 0.1.sh,
                   child: TextFormField(
@@ -764,7 +709,6 @@ _benefits.text = item.benefits ;
                   ),
                 ),
                 Container(
-                  // margin: EdgeInsets.only(left: 20.w),
                   width: 0.4.sw,
                   height: 0.1.sh,
                   child: TextFormField(
@@ -793,7 +737,6 @@ _benefits.text = item.benefits ;
                   ),
                 ),
                 Container(
-                  // margin: EdgeInsets.only(left: 20.w),
                   width: 0.4.sw,
                   height: 0.1.sh,
                   child: TextFormField(
@@ -958,7 +901,7 @@ _benefits.text = item.benefits ;
       }if(widget.productId != null){
         print("has id");
         var doc =
-            await FirebaseFirestore.instance.collection("admin_products").doc(widget.productId);
+             FirebaseFirestore.instance.collection("admin_products").doc(widget.productId);
         if (_imageFile != null) {
           try {
             var uploadTask = await storage
