@@ -47,34 +47,22 @@ class _EditProductState extends State<EditProduct> {
     'Stationary'
   ];
 
-
   //// product Details
   TextEditingController _imageUrl = TextEditingController();
-  TextEditingController _productName =
-      TextEditingController();
-  TextEditingController _productCompany =
-      TextEditingController();
-  TextEditingController _productPrice =
-      TextEditingController();
-  TextEditingController _productemissions =
-      TextEditingController();
-  TextEditingController _productplastic =
-      TextEditingController();
+  TextEditingController _productName = TextEditingController();
+  TextEditingController _productCompany = TextEditingController();
+  TextEditingController _productPrice = TextEditingController();
+  TextEditingController _productemissions = TextEditingController();
+  TextEditingController _productplastic = TextEditingController();
   TextEditingController _productKp = TextEditingController();
 
 //// About product _productemissions
-  TextEditingController _madeSustainable =
-      TextEditingController();
-  TextEditingController _madeNonSustainable =
-      TextEditingController();
-  TextEditingController _disposalSustainable =
-      TextEditingController();
-  TextEditingController _disposalNonSustainable =
-      TextEditingController();
-  TextEditingController _degradeSustainable =
-      TextEditingController();
-  TextEditingController _degradeNonSustainable =
-      TextEditingController();
+  TextEditingController _madeSustainable = TextEditingController();
+  TextEditingController _madeNonSustainable = TextEditingController();
+  TextEditingController _disposalSustainable = TextEditingController();
+  TextEditingController _disposalNonSustainable = TextEditingController();
+  TextEditingController _degradeSustainable = TextEditingController();
+  TextEditingController _degradeNonSustainable = TextEditingController();
   TextEditingController _about = TextEditingController();
   TextEditingController _material = TextEditingController();
   TextEditingController _packing = TextEditingController();
@@ -115,7 +103,8 @@ class _EditProductState extends State<EditProduct> {
     return Scaffold(
         backgroundColor: Colors.grey[200],
         appBar: AppBar(
-          title: Text("${widget.productId == null ? "Add product": "Edit product"}"),
+          title: Text(
+              "${widget.productId == null ? "Add product" : "Edit product"}"),
         ),
         body: widget.productId != null
             ? FutureBuilder<AdminModel>(
@@ -131,30 +120,28 @@ class _EditProductState extends State<EditProduct> {
                   print("has data");
                   print("${item.about}");
                   _imageUrl.text = item.imageUrl;
-_productName.text = item.productName;
-_productCompany.text = item. productCompany;
-_productPrice.text = item. productPrice.toString();
-_productemissions.text = item.productemissions.toString() ;
-_productplastic.text = item.productplastic.toString() ;
-_productKp.text = item.productKp.toString() ;
-_madeSustainable.text = item.madeSustainable ;
-_madeNonSustainable.text = item.madeNonSustainable ;
-_disposalSustainable.text = item.disposalSustainable ;
-_disposalNonSustainable.text = item. disposalNonSustainable;
-_degradeSustainable.text = item.degradeSustainable ;
-_degradeNonSustainable.text = item. degradeNonSustainable;
-_about.text = item.about ;
-_material.text = item.material ;
-_packing.text = item.packing ;
-_benefits.text = item.benefits ;
-                  return main(
-                      );
+                  _productName.text = item.productName;
+                  _productCompany.text = item.productCompany;
+                  _productPrice.text = item.productPrice.toString();
+                  _productemissions.text = item.productemissions.toString();
+                  _productplastic.text = item.productplastic.toString();
+                  _productKp.text = item.productKp.toString();
+                  _madeSustainable.text = item.madeSustainable;
+                  _madeNonSustainable.text = item.madeNonSustainable;
+                  _disposalSustainable.text = item.disposalSustainable;
+                  _disposalNonSustainable.text = item.disposalNonSustainable;
+                  _degradeSustainable.text = item.degradeSustainable;
+                  _degradeNonSustainable.text = item.degradeNonSustainable;
+                  _about.text = item.about;
+                  _material.text = item.material;
+                  _packing.text = item.packing;
+                  _benefits.text = item.benefits;
+                  return main();
                 })
             : main());
   }
 
-  Widget main(
-  ) {
+  Widget main() {
     return Form(
       key: _formKey,
       child: ListView(
@@ -244,14 +231,17 @@ _benefits.text = item.benefits ;
                     children: [
                       TableRow(children: [
                         Text("Name: ", style: style()),
-                        smallTextField(controller: _productName, hintName: "name"),
+                        smallTextField(
+                            controller: _productName, hintName: "name"),
                         SizedBox(
                           height: 10.h,
                         ),
 
                         ///
                         Text("Company: ", style: style()),
-                        smallTextField(controller: _productCompany, hintName: "company name")
+                        smallTextField(
+                            controller: _productCompany,
+                            hintName: "company name")
                       ]),
                       TableRow(children: [
                         SizedBox(
@@ -304,7 +294,8 @@ _benefits.text = item.benefits ;
                           "less plastic pollution(%): ",
                           style: style(),
                         ),
-                        intTextField(controller: _productplastic, hintName: "0"),
+                        intTextField(
+                            controller: _productplastic, hintName: "0"),
                         SizedBox(
                           height: 10.h,
                         ),
@@ -898,10 +889,12 @@ _benefits.text = item.benefits ;
           "liked": 1,
           "benefits": _benefits.text.trim(),
         }, SetOptions(merge: true)).then((value) => clearText());
-      }if(widget.productId != null){
+      }
+      if (widget.productId != null) {
         print("has id");
-        var doc =
-             FirebaseFirestore.instance.collection("admin_products").doc(widget.productId);
+        var doc = FirebaseFirestore.instance
+            .collection("admin_products")
+            .doc(widget.productId);
         if (_imageFile != null) {
           try {
             var uploadTask = await storage
@@ -916,41 +909,42 @@ _benefits.text = item.benefits ;
         }
 
         print("-------------$image----$doc--------");
-        await doc.update({
-          "product_id": widget.productId,
-          "image_url": _imageUrl.text.trim().length != 0
-              ? _imageUrl.text.trim()
-              : image != null
-                  ? image
-                  : "https://images.unsplash.com/photo-1593642634402-b0eb5e2eebc9?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80",
-          'stainless_steel': stainlessSteel,
-          'reusable': reusable,
-          'environmental_friendly': environmentalFriendly,
-          'safe_edge': safeEdge,
-          'suitable': suitable,
-          'cleaning_brush': cleaningBrush,
-          "product_name": _productName.text.trim(),
-          "product_category": _categoryType, //_productCategory.text.trim(),
-          "product_company": _productCompany.text.trim(),
-          "product_price": int.parse(_productPrice.text.trim()),
-          "product_emission": int.parse(_productemissions.text.trim()),
-          "product_plastic": int.parse(_productplastic.text.trim()),
-          "product_kp": int.parse(_productKp.text.trim()),
-          "made_sustainable": _madeSustainable.text.trim(),
-          "made_nonsustainable": _madeNonSustainable.text.trim(),
-          "disposal_sustainable": _disposalSustainable.text.trim(),
-          "disposal_nonsustainable": _disposalNonSustainable.text.trim(),
-          "degrade_sustainable": _degradeSustainable.text.trim(),
-          "degrade_nonsustainable": _degradeNonSustainable.text.trim(),
-          "about": _about.text.trim(),
-          "material": _material.text.trim(),
-          "packing": _packing.text.trim(),
-          "timeStamp": DateTime.now(),
-          "liked": 1,
-          "benefits": _benefits.text.trim(),
-        },).then((value) => clearText());
+        await doc.update(
+          {
+            "product_id": widget.productId,
+            "image_url": _imageUrl.text.trim().length != 0
+                ? _imageUrl.text.trim()
+                : image != null
+                    ? image
+                    : "https://images.unsplash.com/photo-1593642634402-b0eb5e2eebc9?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80",
+            'stainless_steel': stainlessSteel,
+            'reusable': reusable,
+            'environmental_friendly': environmentalFriendly,
+            'safe_edge': safeEdge,
+            'suitable': suitable,
+            'cleaning_brush': cleaningBrush,
+            "product_name": _productName.text.trim(),
+            "product_category": _categoryType, //_productCategory.text.trim(),
+            "product_company": _productCompany.text.trim(),
+            "product_price": int.parse(_productPrice.text.trim()),
+            "product_emission": int.parse(_productemissions.text.trim()),
+            "product_plastic": int.parse(_productplastic.text.trim()),
+            "product_kp": int.parse(_productKp.text.trim()),
+            "made_sustainable": _madeSustainable.text.trim(),
+            "made_nonsustainable": _madeNonSustainable.text.trim(),
+            "disposal_sustainable": _disposalSustainable.text.trim(),
+            "disposal_nonsustainable": _disposalNonSustainable.text.trim(),
+            "degrade_sustainable": _degradeSustainable.text.trim(),
+            "degrade_nonsustainable": _degradeNonSustainable.text.trim(),
+            "about": _about.text.trim(),
+            "material": _material.text.trim(),
+            "packing": _packing.text.trim(),
+            "timeStamp": DateTime.now(),
+            "liked": 1,
+            "benefits": _benefits.text.trim(),
+          },
+        ).then((value) => clearText());
       }
-
     } else {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Invalid")));

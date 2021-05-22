@@ -28,11 +28,6 @@ class _HomePageState extends State<HomePage> {
           Observer(builder: (_) {
             return TextButton.icon(
                 onPressed: _auth.logoutPressed,
-                // () async {
-                //   await _auth.logout().then((value) =>
-                //       Navigator.pushReplacementNamed(
-                //           context, RouteNames.login));
-                // },
                 icon: Icon(
                   Icons.logout,
                   color: Colors.white,
@@ -49,68 +44,95 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       body: Center(
-        child: Row(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Container(
-              width: 80.w,
-              height: 160.h,
-              child: MaterialButton(
-                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-                color: Colors.grey[300],
-                hoverColor: Colors.lightGreen,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.r)),
-                onPressed: () {
-                  // print(FirebaseAuth.instance.currentUser.uid);
-                  FluroRoute.router.navigateTo(context, RouteNames.addProduct);
-                  // Navigator.pushNamed(context, RouteNames.addProduct);
-                },
-                elevation: 8,
-                child: Text(
-                  "Add Product",
-                  style:
-                      TextStyle(fontWeight: FontWeight.bold, fontSize: 20.sp),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Container(
+                  width: 80.w,
+                  height: 160.h,
+                  child: MaterialButton(
+                    padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+                    color: Colors.grey[300],
+                    hoverColor: Colors.lightGreen,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.r)),
+                    onPressed: () {
+                      // print(FirebaseAuth.instance.currentUser.uid);
+                      FluroRoute.router.navigateTo(context, RouteNames.addProduct);
+                      // Navigator.pushNamed(context, RouteNames.addProduct);
+                    },
+                    elevation: 8,
+                    child: Text(
+                      "Add Product",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20.sp),
+                    ),
+                  ),
                 ),
-              ),
+                Container(
+                  width: 80.w,
+                  height: 160.h,
+                  child: MaterialButton(
+                    padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+                    color: Colors.grey[300],
+                    hoverColor: Colors.cyan,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.r)),
+                    onPressed: () {
+                      FluroRoute.router.navigateTo(context, RouteNames.categories);
+                      // Navigator.pushNamed(context, RouteNames.categories);
+                    },
+                    elevation: 8,
+                    child: Text("Uploaded products",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16.sp)),
+                  ),
+                ),
+                // Container(
+                //   width: 80.w,
+                //   height: 160.h,
+                //   child: MaterialButton(
+                //     padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+                //     color: Colors.grey[300],
+                //     hoverColor: Colors.cyan,
+                //     shape: RoundedRectangleBorder(
+                //         borderRadius: BorderRadius.circular(20.r)),
+                //     onPressed: () {
+                //       _adminRepository
+                //     },
+                //     elevation: 8,
+                //     child: Text("check in",
+                //         style: TextStyle(
+                //             fontWeight: FontWeight.bold, fontSize: 16.sp)),
+                //   ),
+                // )
+              ],
             ),
-            Container(
-              width: 80.w,
-              height: 160.h,
-              child: MaterialButton(
-                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-                color: Colors.grey[300],
-                hoverColor: Colors.cyan,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.r)),
-                onPressed: () {
-                  FluroRoute.router.navigateTo(context, RouteNames.categories);
-                  // Navigator.pushNamed(context, RouteNames.categories);
-                },
-                elevation: 8,
-                child: Text("Uploaded products",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16.sp)),
-              ),
-            ),
-            // Container(
-            //   width: 80.w,
-            //   height: 160.h,
-            //   child: MaterialButton(
-            //     padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-            //     color: Colors.grey[300],
-            //     hoverColor: Colors.cyan,
-            //     shape: RoundedRectangleBorder(
-            //         borderRadius: BorderRadius.circular(20.r)),
-            //     onPressed: () {
-            //       _adminRepository
-            //     },
-            //     elevation: 8,
-            //     child: Text("check in",
-            //         style: TextStyle(
-            //             fontWeight: FontWeight.bold, fontSize: 16.sp)),
-            //   ),
-            // )
+          Container(
+                  width: 80.w,
+                  height: 160.h,
+                  child: MaterialButton(
+                    padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+                    color: Colors.grey[300],
+                    hoverColor: Colors.lightGreen,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.r)),
+                    onPressed: () {
+                      // print(FirebaseAuth.instance.currentUser.uid);
+                      FluroRoute.router.navigateTo(context, RouteNames.ordersCategories);
+                      // Navigator.pushNamed(context, RouteNames.addProduct);
+                    },
+                    elevation: 8,
+                    child: Text(
+                      "Orders",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20.sp),
+                    ),
+                  ),
+                ),
           ],
         ),
       ),

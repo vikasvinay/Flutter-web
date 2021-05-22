@@ -80,7 +80,7 @@ class _CategoriesState extends State<Categories> {
                           FluroRoute.router.navigateTo(
                               context, RouteNames.allProducts,
                               routeSettings: RouteSettings(
-                                  arguments: categoryList[index]['category']));
+                                  arguments: [categoryList[index]['category'], false]));
                           // Navigator.pushNamed(context, RouteNames.allProducts,
                           //     arguments: categoryList[index]['category']);
                         },
