@@ -1,8 +1,7 @@
-import 'package:ecommerce_admin/services/login_service.dart';
-import 'package:ecommerce_admin/services/repository/admin_repository.dart';
+import 'package:ecommerce_admin/services/mobx/homePage/home_service.dart';
+import 'package:ecommerce_admin/services/mobx/login/login_service.dart';
 import 'package:ecommerce_admin/services/routing/page_names.dart';
 import 'package:ecommerce_admin/services/routing/route.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -16,13 +15,28 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   Auth _auth = Auth();
-  AdminRepository _adminRepository = AdminRepository();
+  HomeController _homeController = HomeController();
+  @override
+  void initState() {
+    _homeController.getProfile();
+    super.initState();
+  }
 
+  String companyName = '';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.message),
+        onPressed: () {
+          FluroRoute.router.navigateTo(context, RouteNames.messages);
+        },
+      ),
       appBar: AppBar(
-        title: Text("Admin home"),
+        title: Observer(builder: (_) {
+          return Text(_homeController.companyName.toUpperCase());
+        }),
+        centerTitle: true,
         automaticallyImplyLeading: false,
         actions: [
           Observer(builder: (_) {
@@ -54,21 +68,21 @@ class _HomePageState extends State<HomePage> {
                   width: 80.w,
                   height: 160.h,
                   child: MaterialButton(
-                    padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
                     color: Colors.grey[300],
                     hoverColor: Colors.lightGreen,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20.r)),
                     onPressed: () {
-                      // print(FirebaseAuth.instance.currentUser.uid);
-                      FluroRoute.router.navigateTo(context, RouteNames.addProduct);
-                      // Navigator.pushNamed(context, RouteNames.addProduct);
+                      FluroRoute.router
+                          .navigateTo(context, RouteNames.addProduct);
                     },
                     elevation: 8,
                     child: Text(
                       "Add Product",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20.sp),
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 20.sp),
                     ),
                   ),
                 ),
@@ -76,14 +90,15 @@ class _HomePageState extends State<HomePage> {
                   width: 80.w,
                   height: 160.h,
                   child: MaterialButton(
-                    padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
                     color: Colors.grey[300],
                     hoverColor: Colors.cyan,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20.r)),
                     onPressed: () {
-                      FluroRoute.router.navigateTo(context, RouteNames.categories);
-                      // Navigator.pushNamed(context, RouteNames.categories);
+                      FluroRoute.router
+                          .navigateTo(context, RouteNames.categories);
                     },
                     elevation: 8,
                     child: Text("Uploaded products",
@@ -91,48 +106,29 @@ class _HomePageState extends State<HomePage> {
                             fontWeight: FontWeight.bold, fontSize: 16.sp)),
                   ),
                 ),
-                // Container(
-                //   width: 80.w,
-                //   height: 160.h,
-                //   child: MaterialButton(
-                //     padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-                //     color: Colors.grey[300],
-                //     hoverColor: Colors.cyan,
-                //     shape: RoundedRectangleBorder(
-                //         borderRadius: BorderRadius.circular(20.r)),
-                //     onPressed: () {
-                //       _adminRepository
-                //     },
-                //     elevation: 8,
-                //     child: Text("check in",
-                //         style: TextStyle(
-                //             fontWeight: FontWeight.bold, fontSize: 16.sp)),
-                //   ),
-                // )
               ],
             ),
-          Container(
-                  width: 80.w,
-                  height: 160.h,
-                  child: MaterialButton(
-                    padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-                    color: Colors.grey[300],
-                    hoverColor: Colors.lightGreen,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.r)),
-                    onPressed: () {
-                      // print(FirebaseAuth.instance.currentUser.uid);
-                      FluroRoute.router.navigateTo(context, RouteNames.ordersCategories);
-                      // Navigator.pushNamed(context, RouteNames.addProduct);
-                    },
-                    elevation: 8,
-                    child: Text(
-                      "Orders",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20.sp),
-                    ),
-                  ),
+            Container(
+              width: 80.w,
+              height: 160.h,
+              child: MaterialButton(
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+                color: Colors.grey[300],
+                hoverColor: Colors.lightGreen,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.r)),
+                onPressed: () {
+                  FluroRoute.router
+                      .navigateTo(context, RouteNames.ordersCategories);
+                },
+                elevation: 8,
+                child: Text(
+                  "Orders",
+                  style:
+                      TextStyle(fontWeight: FontWeight.bold, fontSize: 20.sp),
                 ),
+              ),
+            ),
           ],
         ),
       ),

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
-class AdminModel {
+class ProductModel {
   bool stainlessSteel;
   bool reusable;
   bool environmentalFriendly;
@@ -31,7 +31,7 @@ class AdminModel {
   Timestamp timeStamp;
   int liked;
 
-  AdminModel(
+  ProductModel(
       {@required this.stainlessSteel,
       @required this.reusable,
       @required this.environmentalFriendly,
@@ -60,7 +60,7 @@ class AdminModel {
       @required this.benefits,
       @required this.liked});
 
-  AdminModel.fromFireStore({@required Map<String, dynamic> map}) {
+  ProductModel.fromFireStore({@required Map<String, dynamic> map}) {
     this.stainlessSteel = map['stainless_steel'];
     this.reusable = map['reusable'];
     this.environmentalFriendly = map['environmental_friendly'];
@@ -90,8 +90,8 @@ class AdminModel {
     this.liked = map['liked'];
     this.benefits = map['benefits'];
   }
-  factory AdminModel.getById({@required DocumentSnapshot doc}) {
-    return AdminModel(
+  factory ProductModel.getById({@required DocumentSnapshot doc}) {
+    return ProductModel(
         stainlessSteel: doc['stainless_steel'],
         reusable: doc['reusable'],
         environmentalFriendly: doc['environmental_friendly'],

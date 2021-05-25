@@ -1,4 +1,4 @@
-import 'package:ecommerce_admin/services/login_service.dart';
+import 'package:ecommerce_admin/services/mobx/login/login_service.dart';
 import 'package:ecommerce_admin/services/routing/page_names.dart';
 import 'package:ecommerce_admin/services/routing/route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -27,34 +27,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    Observer(
-      builder: (_) {
-        if (_auth.error) {
-          return SnackBar(content: Text("Invalid Email"));
-          // ScaffoldMessenger.of(context)
-          // .showSnackBar(SnackBar(content: Text("Invalid Email")));
-        } else {
-          return SnackBar(content: Text("Enter details.."));
-        }
-      },
-    );
-    Observer(
-      builder: (_) {
-        if (_auth.noAccess) {
-          return SnackBar(content: Text("Only admin can access this page  "));
-          // ScaffoldMessenger.of(context)
-          // .showSnackBar(SnackBar(content: Text("Invalid Email")));
-        } else {
-          return SnackBar(content: Text("Enter details.."));
-        }
-      },
-    );
-
     return Scaffold(
       backgroundColor: Colors.grey,
-      // appBar: AppBar(
-      //   title: Text("Login Page"),
-      // ),
       body: SafeArea(
           child: ListView(
         children: [
@@ -99,12 +73,10 @@ class _LoginPageState extends State<LoginPage> {
                                       return null;
                                     },
                                     decoration: InputDecoration(
-                                        // errorText: ,
                                         hintText: "email",
                                         prefixIcon: Icon(Icons.email)),
                                   ));
                             }),
-
                             SizedBox(
                               height: 40.h,
                             ),
@@ -132,12 +104,8 @@ class _LoginPageState extends State<LoginPage> {
                                         prefixIcon: Icon(Icons.lock)),
                                   ));
                             }),
-                            // SizedBox(
-                            //   height: 80.h,
-                            // ),
                           ],
                         )),
-                    // Spacer(),
                     Observer(builder: (_) {
                       return MaterialButton(
                         onPressed: _auth.loginPressed,

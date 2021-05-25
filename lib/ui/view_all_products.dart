@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ecommerce_admin/services/models/model.dart';
+import 'package:ecommerce_admin/services/models/product_model.dart';
 import 'package:ecommerce_admin/services/repository/admin_repository.dart';
 import 'package:ecommerce_admin/services/routing/page_names.dart';
 import 'package:ecommerce_admin/services/routing/route.dart';

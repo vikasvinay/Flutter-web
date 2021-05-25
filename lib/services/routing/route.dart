@@ -1,12 +1,12 @@
-import 'package:ecommerce_admin/services/login_service.dart';
+import 'package:ecommerce_admin/services/mobx/login/login_service.dart';
 import 'package:ecommerce_admin/services/routing/page_names.dart';
-import 'package:ecommerce_admin/ui/edit_product.dart';
+import 'package:ecommerce_admin/ui/edit_and%20_add_product.dart';
 import 'package:ecommerce_admin/ui/error_page.dart';
 import 'package:ecommerce_admin/ui/home_page.dart';
 import 'package:ecommerce_admin/ui/login_page.dart';
+import 'package:ecommerce_admin/ui/messages_page.dart';
 import 'package:ecommerce_admin/ui/orders/order_categories.dart';
 import 'package:ecommerce_admin/ui/orders/order_list.dart';
-import 'package:ecommerce_admin/ui/orders/order_tracking.dart';
 import 'package:ecommerce_admin/ui/products_categories.dart';
 import 'package:ecommerce_admin/ui/view_all_products.dart';
 import 'package:fluro/fluro.dart';
@@ -49,8 +49,8 @@ class FluroRoute {
     return OrdersList(productId: args);
   });
 
-  static Handler _ordertracker =
-      Handler(handlerFunc: (context, params) => OrderTracking());
+  static Handler _messages =
+      Handler(handlerFunc: (context, params) => MessagesPage());
 
   static Handler _pageError = Handler(handlerFunc: (context, params) {
     Auth _auth = Provider.of<Auth>(context);
@@ -67,8 +67,7 @@ class FluroRoute {
     router.define(RouteNames.categories, handler: _categories);
     router.define(RouteNames.ordersCategories, handler: _orderCategories);
     router.define(RouteNames.orderList, handler: _orderlist);
-    router.define(RouteNames.orderTracking, handler: _ordertracker);
-
+    router.define(RouteNames.messages, handler: _messages);
     router.notFoundHandler = _pageError;
   }
 }

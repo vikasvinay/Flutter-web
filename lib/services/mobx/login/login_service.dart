@@ -36,7 +36,7 @@ abstract class _Auth with Store {
   bool error = false;
 
   @observable
-  String  pageState =
+  String pageState =
       _auth.currentUser != null ? RouteNames.home : RouteNames.login;
 
   @computed
@@ -84,7 +84,7 @@ abstract class _Auth with Store {
               .get();
       if (!userAccess.exists ||
           !userAccess.data().containsKey('access') ||
-          !await userAccess['access']) {
+          await userAccess['access'] != 'ADMIN') {
         print(" no account");
         await logout();
         loading = false;

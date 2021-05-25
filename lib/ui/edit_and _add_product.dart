@@ -1,11 +1,17 @@
+import 'dart:html';
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ecommerce_admin/services/models/model.dart';
+import 'package:ecommerce_admin/services/mobx/homePage/home_service.dart';
+import 'package:ecommerce_admin/services/models/product_model.dart';
 import 'package:ecommerce_admin/services/repository/admin_repository.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:image_picker_web/image_picker_web.dart';
 
 class EditProduct extends StatefulWidget {
   final String productId;
@@ -27,7 +33,9 @@ class _EditProductState extends State<EditProduct> {
   bool suitable = false;
   bool cleaningBrush = false;
   bool error = false;
+  bool isNetworkImage = false;
   String _categoryType = 'Home';
+  HomeController _homeController = HomeController();
 
   var categoriesList = [
     AllCategories.Kitchen,
@@ -69,15 +77,20 @@ class _EditProductState extends State<EditProduct> {
   TextEditingController _benefits = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
-  final ImagePicker _picker = ImagePicker();
+  final _formKey1 = GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  // final ImagePicker _picker = ImagePicker();
+  var _imageAsFiles = <PickedFile>[];
+  var _pickedImages = [];
+  final picker = ImagePicker();
   PickedFile _imageFile;
   final storage = FirebaseStorage.instance;
-  String downloadUrl;
+  var downloadUrls = <String>[];
 
   clearText() {
     _imageUrl.clear();
     _productName.clear();
-    // _productCategory.clear();
     _about.clear();
     _degradeNonSustainable.clear();
     _madeNonSustainable.clear();
@@ -99,15 +112,23 @@ class _EditProductState extends State<EditProduct> {
   AllCategories _categories = AllCategories.Home;
 
   @override
+  void initState() {
+    _homeController.getProfile();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
+        key: _scaffoldKey,
         backgroundColor: Colors.grey[200],
         appBar: AppBar(
           title: Text(
               "${widget.productId == null ? "Add product" : "Edit product"}"),
         ),
         body: widget.productId != null
-            ? FutureBuilder<AdminModel>(
+            ? FutureBuilder<ProductModel>(
                 future:
                     _adminRepository.getaProduct(productId: widget.productId),
                 builder: (context, snapshot) {
@@ -117,8 +138,6 @@ class _EditProductState extends State<EditProduct> {
                     );
                   }
                   var item = snapshot.requireData;
-                  print("has data");
-                  print("${item.about}");
                   _imageUrl.text = item.imageUrl;
                   _productName.text = item.productName;
                   _productCompany.text = item.productCompany;
@@ -136,12 +155,12 @@ class _EditProductState extends State<EditProduct> {
                   _material.text = item.material;
                   _packing.text = item.packing;
                   _benefits.text = item.benefits;
-                  return main();
+                  return main(size);
                 })
-            : main());
+            : main(size));
   }
 
-  Widget main() {
+  Widget main(Size size) {
     return Form(
       key: _formKey,
       child: ListView(
@@ -154,54 +173,141 @@ class _EditProductState extends State<EditProduct> {
               style: style(fontSize: 18.sp),
             ),
           ),
-          Container(
-            padding: EdgeInsets.all(20.r),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          if (_pickedImages.isNotEmpty)
+            Column(
               children: [
                 Container(
-                  height: 120.h,
-                  width: 60.w,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20.r),
-                      image: DecorationImage(
-                          image: NetworkImage(image != null && image.length > 2
-                              ? image
-                              : "https://images.unsplash.com/photo-1593642634402-b0eb5e2eebc9?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"),
-                          fit: BoxFit.fill)),
-                ),
-                Container(
-                  height: 100.h,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      textField(controller: _imageUrl, hintName: "Image Url"),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          ElevatedButton(
-                              onPressed: () {
-                                setState(() {
-                                  image = _imageUrl.text.trim();
-                                });
-                              },
-                              child: Text("Add")),
-                          SizedBox(
-                            width: 10.w,
+                  alignment: Alignment.center,
+                  height: 0.3.sh,
+                  width: 1.sw,
+                  child: ListView.builder(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _pickedImages.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: [
+                              Container(
+                                height: 150.r,
+                                width: 200.r,
+                                decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                        image: isNetworkImage
+                                            ? NetworkImage(_pickedImages[index])
+                                            : MemoryImage(_pickedImages[index]),
+                                        fit: BoxFit.cover)),
+                              ),
+                              Divider(),
+                              Text("Image${index + 1}")
+                            ],
                           ),
-                          ElevatedButton(
-                              onPressed: () {
-                                pickImage();
-                              },
-                              child: Text("Select from device")),
-                        ],
-                      )
-                    ],
-                  ),
+                        );
+                      }),
+                ),
+                Text(
+                  "Note: Only first four images will be uploaded",
+                  style: TextStyle(color: Colors.red),
+                ),
+                Divider(
+                  color: Colors.transparent,
                 )
               ],
             ),
+
+          if (_pickedImages.isNotEmpty)
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: MaterialButton(
+                height: 40.h,
+                minWidth: 60.w,
+                color: Colors.greenAccent,
+                onPressed: () async {
+                  var urls = await uploadImageToFirebase();
+                  var id = FirebaseFirestore.instance
+                      .collection("test_images")
+                      .doc();
+                  await id.set(
+                      {'imageUrl': urls, 'id': id}, SetOptions(merge: true));
+                },
+                child: Text(
+                  "Upload",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14.sp,
+                  ),
+                ),
+              ),
+            ),
+          SizedBox(
+            height: 200,
           ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              // imageView(), dummyImage()
+              ElevatedButton(
+                  onPressed: () {
+                    pickImage();
+                  },
+                  child: Text("Select from device")),
+              ElevatedButton(
+                  onPressed: () {
+                    popUp(size);
+                  },
+                  child: Text("Add URL")),
+            ],
+          ),
+          // Container(
+          //   padding: EdgeInsets.all(20.r),
+          //   child: Row(
+          //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          //     children: [
+          //       Container(
+          //         height: 120.h,
+          //         width: 60.w,
+          //         decoration: BoxDecoration(
+          //             borderRadius: BorderRadius.circular(20.r),
+          //             image: DecorationImage(
+          //                 image: NetworkImage(image != null && image.length > 2
+          //                     ? image
+          //                     : "https://images.unsplash.com/photo-1593642634402-b0eb5e2eebc9?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"),
+          //                 fit: BoxFit.fill)),
+          //       ),
+          //       Container(
+          //         height: 100.h,
+          //         child: Column(
+          //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          //           children: [
+          //             textField(controller: _imageUrl, hintName: "Image Url"),
+          //             Row(
+          //               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          //               children: [
+          //                 ElevatedButton(
+          //                     onPressed: () {
+          //                       setState(() {
+          //                         image = _imageUrl.text.trim();
+          //                       });
+          //                     },
+          //                     child: Text("Add")),
+          //                 SizedBox(
+          //                   width: 10.w,
+          //                 ),
+          // ElevatedButton(
+          //     onPressed: () {
+          //       pickImage();
+          //     },
+          //     child: Text("Select from device")),
+          //               ],
+          //             )
+          //           ],
+          //         ),
+          //       )
+          //     ],
+          //   ),
+          // ),
+
           Divider(
             color: Colors.grey[300],
           ),
@@ -242,6 +348,10 @@ class _EditProductState extends State<EditProduct> {
                         smallTextField(
                             controller: _productCompany,
                             hintName: "company name")
+                        // Observer(builder: (_) {
+                        //   return Text(
+                        //       _homeController.companyName.toUpperCase());
+                        // })
                       ]),
                       TableRow(children: [
                         SizedBox(
@@ -339,9 +449,6 @@ class _EditProductState extends State<EditProduct> {
                             _categories = value;
                             _categoryType = categories[value.index];
                           });
-                          print(_categories == categoriesList[index]);
-                          print(_categories);
-                          print(_categoryType);
                         },
                       ),
                     ),
@@ -516,7 +623,6 @@ class _EditProductState extends State<EditProduct> {
                                   setState(() {
                                     stainlessSteel = !stainlessSteel;
                                   });
-                                  print(stainlessSteel);
                                 })
                           ],
                         ),
@@ -535,7 +641,6 @@ class _EditProductState extends State<EditProduct> {
                                   setState(() {
                                     safeEdge = !safeEdge;
                                   });
-                                  print(safeEdge);
                                 })
                           ],
                         ),
@@ -554,7 +659,6 @@ class _EditProductState extends State<EditProduct> {
                                   setState(() {
                                     reusable = !reusable;
                                   });
-                                  print(reusable);
                                 })
                           ],
                         ),
@@ -573,7 +677,6 @@ class _EditProductState extends State<EditProduct> {
                                   setState(() {
                                     cleaningBrush = !cleaningBrush;
                                   });
-                                  print(cleaningBrush);
                                 })
                           ],
                         ),
@@ -592,7 +695,6 @@ class _EditProductState extends State<EditProduct> {
                                   setState(() {
                                     suitable = !suitable;
                                   });
-                                  print(suitable);
                                 })
                           ],
                         ),
@@ -612,7 +714,6 @@ class _EditProductState extends State<EditProduct> {
                                     environmentalFriendly =
                                         !environmentalFriendly;
                                   });
-                                  print(environmentalFriendly);
                                 })
                           ],
                         ),
@@ -855,7 +956,6 @@ class _EditProductState extends State<EditProduct> {
           }
         }
 
-        print("-------------$image------------");
         await doc.set({
           "product_id": doc.id,
           "image_url": _imageUrl.text.trim().length != 0
@@ -887,11 +987,13 @@ class _EditProductState extends State<EditProduct> {
           "packing": _packing.text.trim(),
           "timeStamp": DateTime.now(),
           "liked": 1,
+          "search_name": _productName.text.toLowerCase().trim(),
+          'search_company_name':
+              _homeController.companyName.toLowerCase().trim(),
           "benefits": _benefits.text.trim(),
         }, SetOptions(merge: true)).then((value) => clearText());
       }
       if (widget.productId != null) {
-        print("has id");
         var doc = FirebaseFirestore.instance
             .collection("admin_products")
             .doc(widget.productId);
@@ -908,7 +1010,6 @@ class _EditProductState extends State<EditProduct> {
           }
         }
 
-        print("-------------$image----$doc--------");
         await doc.update(
           {
             "product_id": widget.productId,
@@ -955,12 +1056,223 @@ class _EditProductState extends State<EditProduct> {
   }
 
   pickImage() async {
-    final pickedFile = await _picker.getImage(
-      source: ImageSource.gallery,
-    );
+    // final pickedFile = await _picker.getImage(
+    //   source: ImageSource.gallery,
+    // );
+    // setState(() {
+    //   _imageFile = pickedFile;
+    //   image = _imageFile.path;
+    // });
+    var images =
+        await ImagePickerWeb.getMultiImages(outputType: ImageType.bytes)
+            as List<Uint8List>;
     setState(() {
-      _imageFile = pickedFile;
-      image = _imageFile.path;
+      _pickedImages.clear();
+      _pickedImages.addAll(images);
     });
   }
+
+  Future<List> uploadImageToFirebase() async {
+    // upload images to firebase
+
+    var futures = [];
+    try {
+      for (int i = 0; i < _pickedImages.length; i++) {
+        var uploadTask = await storage
+            .ref("images/$i.jpg")
+            .putData(await (_pickedImages.elementAt(i)) as Uint8List);
+        futures.add(uploadTask.ref
+            .getDownloadURL()
+            .then((value) => downloadUrls.add(value)));
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    await Future.wait(futures.map((e) => e));
+    print(downloadUrls);
+    return downloadUrls;
+  }
+
+  Widget imageView() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "Uploaded Images",
+              style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold),
+            )),
+        SizedBox(
+          height: 30.h,
+        ),
+        Container(
+          alignment: Alignment.center,
+          height: 0.5.sh,
+          width: 0.5.sw,
+          child: ListView.builder(
+              shrinkWrap: true,
+              scrollDirection: Axis.vertical,
+              itemCount: _pickedImages.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: EdgeInsets.only(top: 40.h),
+                  child: ListTile(
+                    leading: Image.memory(
+                      _pickedImages[index],
+                      width: 200,
+                      height: 400,
+                      fit: BoxFit.fill,
+                    ),
+                    title: Text(
+                      "$index.jpg",
+                      style: TextStyle(fontSize: 15.sp),
+                    ),
+                  ),
+                );
+              }),
+        ),
+        if (_pickedImages.isNotEmpty)
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: MaterialButton(
+              height: 40.h,
+              minWidth: 60.w,
+              color: Colors.greenAccent,
+              onPressed: () async {
+                var urls = await uploadImageToFirebase();
+                var id =
+                    FirebaseFirestore.instance.collection("test_images").doc();
+                await id
+                    .set({'imageUrl': urls, 'id': id}, SetOptions(merge: true));
+              },
+              child: Text(
+                "Upload",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14.sp,
+                ),
+              ),
+            ),
+          )
+      ],
+    );
+  }
+
+  Widget dummyImage() {
+    return Column(
+      children: [
+        Container(
+            color: Colors.grey[300],
+            width: 0.3.sw,
+            height: 0.3.sw,
+            alignment: Alignment.center,
+            child: Icon(
+              Icons.add,
+              size: 90.r,
+            )),
+        SizedBox(
+          height: 20.h,
+        ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+              minimumSize: Size(60.w, 40.h),
+              primary: Colors.lightGreen,
+              onPrimary: Colors.black),
+          onPressed: pickImage,
+          child: Text(
+            "Choose images",
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 14.sp,
+                color: Colors.black),
+          ),
+        ),
+      ],
+    );
+  }
+
+  popUp(Size size) {
+    return _scaffoldKey.currentState.showBottomSheet((context) {
+      return Form(
+        key: _formKey1,
+        child: Material(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(25), topRight: Radius.circular(25)),
+            color: Colors.grey[350],
+            child: Container(
+                alignment: Alignment.center,
+                height: size.height / 2,
+                width: size.width / 0.5,
+                child: Column(
+                  children: [
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: Icon(
+                            Icons.close,
+                            size: 30,
+                          )),
+                    ),
+                    Container(
+                      height: size.height / 2.5,
+                      width: size.width / 0.55,
+                      child: ListView.builder(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          itemCount: _controllers.length,
+                          itemBuilder: (context, index) {
+                            return Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(" Image${index + 1}: "),
+                                Container(
+                                  width: 400,
+                                  height: 60,
+                                  child: TextFormField(
+                                    controller: _controllers[index],
+                                    validator: (value) {
+                                      var valid = RegExp(
+                                              r"(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)")
+                                          .hasMatch(value);
+                                      return valid ? null : "Enter correct url";
+                                    },
+                                    decoration: InputDecoration(
+                                        enabledBorder: OutlineInputBorder(),
+                                        hintText: "url",
+                                        border: OutlineInputBorder()),
+                                  ),
+                                )
+                              ],
+                            );
+                          }),
+                    ),
+                    ElevatedButton(
+                        onPressed: () {
+                          if (_formKey1.currentState.validate()) {
+                            print("-------valid");
+                            print(List.generate(
+                                4, (index) => _controllers[index].text));
+                            Navigator.pop(context);
+                            setState(() {
+                              _pickedImages = List.generate(_controllers.length,
+                                  (index) => _controllers[index].text);
+                              isNetworkImage = true;
+                            });
+                          } else {
+                            print("--------error");
+                          }
+                        },
+                        child: Text("Add")),
+                  ],
+                ))),
+      );
+    });
+  }
+
+  var _controllers = List.generate(4, (index) => TextEditingController());
 }
