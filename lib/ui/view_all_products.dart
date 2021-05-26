@@ -1,6 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ecommerce_admin/services/models/product_model.dart';
-import 'package:ecommerce_admin/services/repository/admin_repository.dart';
 import 'package:ecommerce_admin/services/routing/page_names.dart';
 import 'package:ecommerce_admin/services/routing/route.dart';
 import 'package:flutter/material.dart';
@@ -302,42 +300,42 @@ class _AllProductsState extends State<AllProducts> {
             ),
           ),
           // Spacer(flex: 2,),
-          Container(
-            // color: Colors.blueAccent,
-            height: 40.h,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                IconButton(
-                    icon: Icon(
-                      Icons.favorite_border,
-                      color: Colors.cyan,
-                    ),
-                    onPressed: () {}),
-                OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10.r)),
-                    ),
-                  ),
-                  autofocus: true,
-                  child: Text("How is this better?"),
-                  onPressed: () {},
-                ),
-                OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10.r)),
-                    ),
-                  ),
-                  autofocus: true,
-                  child: Text("Add to bag"),
-                  onPressed: () {},
-                ),
-              ],
-            ),
-          ),
-          // Spacer(flex: 1,),
+          // Container(
+          //   // color: Colors.blueAccent,
+          //   height: 40.h,
+          //   child: Row(
+          //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          //     children: [
+          //       IconButton(
+          //           icon: Icon(
+          //             Icons.favorite_border,
+          //             color: Colors.cyan,
+          //           ),
+          //           onPressed: () {}),
+          //       OutlinedButton(
+          //         style: OutlinedButton.styleFrom(
+          //           shape: RoundedRectangleBorder(
+          //             borderRadius: BorderRadius.all(Radius.circular(10.r)),
+          //           ),
+          //         ),
+          //         autofocus: true,
+          //         child: Text("How is this better?"),
+          //         onPressed: () {},
+          //       ),
+          //       OutlinedButton(
+          //         style: OutlinedButton.styleFrom(
+          //           shape: RoundedRectangleBorder(
+          //             borderRadius: BorderRadius.all(Radius.circular(10.r)),
+          //           ),
+          //         ),
+          //         autofocus: true,
+          //         child: Text("Add to bag"),
+          //         onPressed: () {},
+          //       ),
+          //     ],
+          //   ),
+          // ),
+          // // Spacer(flex: 1,),
         ],
       ),
     );

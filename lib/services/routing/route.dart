@@ -4,7 +4,7 @@ import 'package:ecommerce_admin/ui/edit_and%20_add_product.dart';
 import 'package:ecommerce_admin/ui/error_page.dart';
 import 'package:ecommerce_admin/ui/home_page.dart';
 import 'package:ecommerce_admin/ui/login_page.dart';
-import 'package:ecommerce_admin/ui/messages_page.dart';
+import 'package:ecommerce_admin/ui/orders/messages_page.dart';
 import 'package:ecommerce_admin/ui/orders/order_categories.dart';
 import 'package:ecommerce_admin/ui/orders/order_list.dart';
 import 'package:ecommerce_admin/ui/products_categories.dart';

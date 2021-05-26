@@ -3,8 +3,8 @@ import 'package:flutter/foundation.dart';
 
 class MessageModel {
   String question;
-  Timestamp questionTimestamp;
-  Timestamp answerTimeStamp;
+  int questionTimestamp;
+  int answerTimeStamp;
   String userUid;
   String productId;
   String answer;
@@ -30,11 +30,12 @@ class MessageModel {
         userUid: doc.id);
   }
   MessageModel.fromFireStore(
-      {@required Map<String, dynamic> map}) {
+      {@required Map<String, dynamic> map, @required String userUid}) {
     this.answer = map['answer'];
     this.hasAnswer = map['has_answer'];
     this.productId = map['product_id'];
     this.question = map['question'];
+    this.userUid = userUid;
     this.answerTimeStamp = map['ans_timestamp'];
     this.questionTimestamp = map['question_timestamp'];
   }

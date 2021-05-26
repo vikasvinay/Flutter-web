@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
 class ProductModel {
@@ -27,8 +26,10 @@ class ProductModel {
   String material;
   String packing;
   String id;
+  String adminId;
   String benefits;
   Timestamp timeStamp;
+  String searchName;
   int liked;
 
   ProductModel(
@@ -37,11 +38,13 @@ class ProductModel {
       @required this.environmentalFriendly,
       @required this.safeEdge,
       @required this.suitable,
+      @required this.searchName,
       @required this.cleaningBrush,
       @required this.imageUrl,
       @required this.productName,
       @required this.productCategory,
       @required this.productCompany,
+      @required this.adminId,
       @required this.productPrice,
       @required this.productemissions,
       @required this.productplastic,
@@ -62,12 +65,13 @@ class ProductModel {
 
   ProductModel.fromFireStore({@required Map<String, dynamic> map}) {
     this.stainlessSteel = map['stainless_steel'];
+    this.searchName = map['search_name'];
     this.reusable = map['reusable'];
     this.environmentalFriendly = map['environmental_friendly'];
     this.safeEdge = map['safe_edge'];
     this.suitable = map['suitable'];
     this.cleaningBrush = map['cleaning_brush'];
-
+    this.adminId = map['admin_id'];
     this.imageUrl = map['image_url'];
     this.productName = map['product_name'];
     this.productCategory = map['product_category'];
@@ -92,6 +96,8 @@ class ProductModel {
   }
   factory ProductModel.getById({@required DocumentSnapshot doc}) {
     return ProductModel(
+      searchName: doc['search_name'],
+        adminId: doc['admin_id'],
         stainlessSteel: doc['stainless_steel'],
         reusable: doc['reusable'],
         environmentalFriendly: doc['environmental_friendly'],

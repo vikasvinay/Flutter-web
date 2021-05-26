@@ -1,14 +1,13 @@
-import 'dart:html';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerce_admin/services/mobx/homePage/home_service.dart';
 import 'package:ecommerce_admin/services/models/product_model.dart';
-import 'package:ecommerce_admin/services/repository/admin_repository.dart';
+import 'package:ecommerce_admin/services/repository/product_repository.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_picker_web/image_picker_web.dart';
@@ -22,7 +21,7 @@ class EditProduct extends StatefulWidget {
 }
 
 enum AllCategories { Kitchen, Home, Travel, Baby, Bathroom, Stationary }
-AdminRepository _adminRepository = AdminRepository();
+ProductRepository _adminRepository = ProductRepository();
 
 class _EditProductState extends State<EditProduct> {
   String image;
@@ -942,7 +941,7 @@ class _EditProductState extends State<EditProduct> {
           .showSnackBar(SnackBar(content: Text("Uploading wait")));
       if (widget.productId == null) {
         var doc =
-            await FirebaseFirestore.instance.collection("admin_products").doc();
+             FirebaseFirestore.instance.collection("admin_products").doc();
         if (_imageFile != null) {
           try {
             var uploadTask = await storage
@@ -987,6 +986,7 @@ class _EditProductState extends State<EditProduct> {
           "packing": _packing.text.trim(),
           "timeStamp": DateTime.now(),
           "liked": 1,
+          "admin_id": FirebaseAuth.instance.currentUser.uid,
           "search_name": _productName.text.toLowerCase().trim(),
           'search_company_name':
               _homeController.companyName.toLowerCase().trim(),

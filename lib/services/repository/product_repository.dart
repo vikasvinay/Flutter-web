@@ -3,11 +3,11 @@ import 'package:ecommerce_admin/services/models/product_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
-class AdminRepository {
+class ProductRepository {
   final FirebaseAuth firebaseAuth;
   final FirebaseFirestore firebaseFirestore;
 
-  AdminRepository(
+  ProductRepository(
       {FirebaseAuth firebaseAuth, FirebaseFirestore firebaseFirestore})
       : firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
         firebaseFirestore = FirebaseFirestore.instance;

@@ -8,7 +8,7 @@ class ErrorPage extends StatelessWidget {
       body: SafeArea(
         child: Center(
           child: Container(
-            height: size.height / 20,
+            height: size.height / 10,
             child: Column(
               children: [
                 Text(
