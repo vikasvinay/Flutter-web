@@ -79,8 +79,6 @@ class _EditProductState extends State<EditProduct> {
   final _formKey1 = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  // final ImagePicker _picker = ImagePicker();
-  var _imageAsFiles = <PickedFile>[];
   var _pickedImages = [];
   final picker = ImagePicker();
   PickedFile _imageFile;
@@ -89,6 +87,8 @@ class _EditProductState extends State<EditProduct> {
 
   clearText() {
     _imageUrl.clear();
+    _pickedImages.clear();
+    downloadUrls.clear();
     _productName.clear();
     _about.clear();
     _degradeNonSustainable.clear();
@@ -136,8 +136,10 @@ class _EditProductState extends State<EditProduct> {
                       child: CircularProgressIndicator(),
                     );
                   }
-                  var item = snapshot.requireData;
-                  _imageUrl.text = item.imageUrl;
+                  ProductModel item = snapshot.requireData;
+                  _pickedImages = item.imageUrl;
+                  isNetworkImage = true;
+                  _imageUrl.text = 'item.imageUrl';
                   _productName.text = item.productName;
                   _productCompany.text = item.productCompany;
                   _productPrice.text = item.productPrice.toString();
@@ -214,38 +216,31 @@ class _EditProductState extends State<EditProduct> {
                 )
               ],
             ),
-
-          if (_pickedImages.isNotEmpty)
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: MaterialButton(
-                height: 40.h,
-                minWidth: 60.w,
-                color: Colors.greenAccent,
-                onPressed: () async {
-                  var urls = await uploadImageToFirebase();
-                  var id = FirebaseFirestore.instance
-                      .collection("test_images")
-                      .doc();
-                  await id.set(
-                      {'imageUrl': urls, 'id': id}, SetOptions(merge: true));
-                },
-                child: Text(
-                  "Upload",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14.sp,
-                  ),
-                ),
-              ),
-            ),
+          // if (_pickedImages.isNotEmpty && !isNetworkImage)
+          //   Align(
+          //     alignment: Alignment.bottomCenter,
+          //     child: MaterialButton(
+          //       height: 40.h,
+          //       minWidth: 60.w,
+          //       color: Colors.greenAccent,
+          //       onPressed: () async {
+          //         await uploadImageToFirebase();
+          //       },
+          //       child: Text(
+          //         "Upload",
+          //         style: TextStyle(
+          //           fontWeight: FontWeight.bold,
+          //           fontSize: 14.sp,
+          //         ),
+          //       ),
+          //     ),
+          //   ),
           SizedBox(
             height: 200,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              // imageView(), dummyImage()
               ElevatedButton(
                   onPressed: () {
                     pickImage();
@@ -258,55 +253,6 @@ class _EditProductState extends State<EditProduct> {
                   child: Text("Add URL")),
             ],
           ),
-          // Container(
-          //   padding: EdgeInsets.all(20.r),
-          //   child: Row(
-          //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          //     children: [
-          //       Container(
-          //         height: 120.h,
-          //         width: 60.w,
-          //         decoration: BoxDecoration(
-          //             borderRadius: BorderRadius.circular(20.r),
-          //             image: DecorationImage(
-          //                 image: NetworkImage(image != null && image.length > 2
-          //                     ? image
-          //                     : "https://images.unsplash.com/photo-1593642634402-b0eb5e2eebc9?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"),
-          //                 fit: BoxFit.fill)),
-          //       ),
-          //       Container(
-          //         height: 100.h,
-          //         child: Column(
-          //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          //           children: [
-          //             textField(controller: _imageUrl, hintName: "Image Url"),
-          //             Row(
-          //               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          //               children: [
-          //                 ElevatedButton(
-          //                     onPressed: () {
-          //                       setState(() {
-          //                         image = _imageUrl.text.trim();
-          //                       });
-          //                     },
-          //                     child: Text("Add")),
-          //                 SizedBox(
-          //                   width: 10.w,
-          //                 ),
-          // ElevatedButton(
-          //     onPressed: () {
-          //       pickImage();
-          //     },
-          //     child: Text("Select from device")),
-          //               ],
-          //             )
-          //           ],
-          //         ),
-          //       )
-          //     ],
-          //   ),
-          // ),
-
           Divider(
             color: Colors.grey[300],
           ),
@@ -855,7 +801,7 @@ class _EditProductState extends State<EditProduct> {
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 125.w, vertical: 18.h),
               child: MaterialButton(
-                onPressed: validate,
+                onPressed: sendToFireStore,
                 padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
                 color: Colors.red,
                 hoverColor: Colors.green,
@@ -935,33 +881,20 @@ class _EditProductState extends State<EditProduct> {
     );
   }
 
-  validate() async {
+  sendToFireStore() async {
     if (_formKey.currentState.validate()) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Uploading wait")));
       if (widget.productId == null) {
-        var doc =
-             FirebaseFirestore.instance.collection("admin_products").doc();
-        if (_imageFile != null) {
-          try {
-            var uploadTask = await storage
-                .ref("admin_products/${doc.id}.jpg")
-                .putData(await _imageFile.readAsBytes());
-            await uploadTask.ref
-                .getDownloadURL()
-                .then((value) => image = value);
-          } catch (e) {
-            debugPrint(e.toString());
-          }
-        }
-
+        var doc = FirebaseFirestore.instance.collection("admin_products").doc();
+        uploadImageToFirebase(doc.id);
         await doc.set({
           "product_id": doc.id,
-          "image_url": _imageUrl.text.trim().length != 0
-              ? _imageUrl.text.trim()
-              : image != null
-                  ? image
-                  : "https://images.unsplash.com/photo-1593642634402-b0eb5e2eebc9?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80",
+          "image_url": _pickedImages.isNotEmpty
+              ? _pickedImages
+              : [
+                  "https://images.unsplash.com/photo-1593642634402-b0eb5e2eebc9?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"
+                ],
           'stainless_steel': stainlessSteel,
           'reusable': reusable,
           'environmental_friendly': environmentalFriendly,
@@ -969,7 +902,7 @@ class _EditProductState extends State<EditProduct> {
           'suitable': suitable,
           'cleaning_brush': cleaningBrush,
           "product_name": _productName.text.trim(),
-          "product_category": _categoryType, //_productCategory.text.trim(),
+          "product_category": _categoryType,
           "product_company": _productCompany.text.trim(),
           "product_price": int.parse(_productPrice.text.trim()),
           "product_emission": int.parse(_productemissions.text.trim()),
@@ -997,27 +930,28 @@ class _EditProductState extends State<EditProduct> {
         var doc = FirebaseFirestore.instance
             .collection("admin_products")
             .doc(widget.productId);
-        if (_imageFile != null) {
-          try {
-            var uploadTask = await storage
-                .ref("admin_products/${widget.productId}.jpg")
-                .putData(await _imageFile.readAsBytes());
-            await uploadTask.ref
-                .getDownloadURL()
-                .then((value) => image = value);
-          } catch (e) {
-            debugPrint(e.toString());
-          }
-        }
+        // if (_imageFile != null) {
+        //   try {
+        //     var uploadTask = await storage
+        //         .ref("admin_products/${widget.productId}.jpg")
+        //         .putData(await _imageFile.readAsBytes());
+        //     await uploadTask.ref
+        //         .getDownloadURL()
+        //         .then((value) => image = value);
+        //   } catch (e) {
+        //     debugPrint(e.toString());
+        //   }
+        // }
+        uploadImageToFirebase(widget.productId);
 
         await doc.update(
           {
             "product_id": widget.productId,
-            "image_url": _imageUrl.text.trim().length != 0
-                ? _imageUrl.text.trim()
-                : image != null
-                    ? image
-                    : "https://images.unsplash.com/photo-1593642634402-b0eb5e2eebc9?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80",
+            "image_url": _pickedImages.isNotEmpty
+                ? _pickedImages
+                : [
+                    "https://images.unsplash.com/photo-1593642634402-b0eb5e2eebc9?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"
+                  ],
             'stainless_steel': stainlessSteel,
             'reusable': reusable,
             'environmental_friendly': environmentalFriendly,
@@ -1025,7 +959,7 @@ class _EditProductState extends State<EditProduct> {
             'suitable': suitable,
             'cleaning_brush': cleaningBrush,
             "product_name": _productName.text.trim(),
-            "product_category": _categoryType, //_productCategory.text.trim(),
+            "product_category": _categoryType,
             "product_company": _productCompany.text.trim(),
             "product_price": int.parse(_productPrice.text.trim()),
             "product_emission": int.parse(_productemissions.text.trim()),
@@ -1044,7 +978,10 @@ class _EditProductState extends State<EditProduct> {
             "liked": 1,
             "benefits": _benefits.text.trim(),
           },
-        ).then((value) => clearText());
+        ).then((value) {
+          clearText();
+          Navigator.pop(context);
+        });
       }
     } else {
       ScaffoldMessenger.of(context)
@@ -1056,13 +993,6 @@ class _EditProductState extends State<EditProduct> {
   }
 
   pickImage() async {
-    // final pickedFile = await _picker.getImage(
-    //   source: ImageSource.gallery,
-    // );
-    // setState(() {
-    //   _imageFile = pickedFile;
-    //   image = _imageFile.path;
-    // });
     var images =
         await ImagePickerWeb.getMultiImages(outputType: ImageType.bytes)
             as List<Uint8List>;
@@ -1072,18 +1002,22 @@ class _EditProductState extends State<EditProduct> {
     });
   }
 
-  Future<List> uploadImageToFirebase() async {
+  Future<List> uploadImageToFirebase(String productId) async {
     // upload images to firebase
 
     var futures = [];
     try {
-      for (int i = 0; i < _pickedImages.length; i++) {
+      for (int i = 0;
+          i < (_pickedImages.length < 4 ? _pickedImages.length : 4);
+          i++) {
         var uploadTask = await storage
-            .ref("images/$i.jpg")
+            .ref(
+                "admin_products/${productId + "$i"}.jpg")
             .putData(await (_pickedImages.elementAt(i)) as Uint8List);
         futures.add(uploadTask.ref
             .getDownloadURL()
             .then((value) => downloadUrls.add(value)));
+        _pickedImages = downloadUrls;
       }
     } catch (e) {
       debugPrint(e.toString());
@@ -1132,29 +1066,29 @@ class _EditProductState extends State<EditProduct> {
                 );
               }),
         ),
-        if (_pickedImages.isNotEmpty)
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: MaterialButton(
-              height: 40.h,
-              minWidth: 60.w,
-              color: Colors.greenAccent,
-              onPressed: () async {
-                var urls = await uploadImageToFirebase();
-                var id =
-                    FirebaseFirestore.instance.collection("test_images").doc();
-                await id
-                    .set({'imageUrl': urls, 'id': id}, SetOptions(merge: true));
-              },
-              child: Text(
-                "Upload",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14.sp,
-                ),
-              ),
-            ),
-          )
+        // if (_pickedImages.isNotEmpty)
+        //   Align(
+        //     alignment: Alignment.bottomCenter,
+        //     child: MaterialButton(
+        //       height: 40.h,
+        //       minWidth: 60.w,
+        //       color: Colors.greenAccent,
+        //       onPressed: () async {
+        //         // var urls = await uploadImageToFirebase();
+        //         // var id =
+        //         //     FirebaseFirestore.instance.collection("test_images").doc();
+        //         // await id
+        //         //     .set({'imageUrl': urls, 'id': id}, SetOptions(merge: true));
+        //       },
+        //       child: Text(
+        //         "Save",
+        //         style: TextStyle(
+        //           fontWeight: FontWeight.bold,
+        //           fontSize: 14.sp,
+        //         ),
+        //       ),
+        //     ),
+          // )
       ],
     );
   }
@@ -1237,7 +1171,9 @@ class _EditProductState extends State<EditProduct> {
                                     controller: _controllers[index],
                                     validator: (value) {
                                       var valid = RegExp(
-                                              r"(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)")
+                                        r"((https?:www\.)|(https?:\/\/)|(www\.))[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9]{1,6}(\/[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)?"
+                                              // r'(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)'
+                                              )
                                           .hasMatch(value);
                                       return valid ? null : "Enter correct url";
                                     },

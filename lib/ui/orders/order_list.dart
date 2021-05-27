@@ -34,6 +34,7 @@ class _OrdersListState extends State<OrdersList> {
       List.generate(5, (index) => TextEditingController());
   Status _status = Status.Processing;
   String setStatus = 'PROCESSING';
+  int temp = 0;
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -272,9 +273,6 @@ class _OrdersListState extends State<OrdersList> {
                                           scrollDirection: Axis.horizontal,
                                           itemCount: listOfBool.length,
                                           itemBuilder: (context, index) {
-                                            // var trackingData = snapshot
-                                            //     .requireData
-                                            //     .data()['details'][index];
                                             return Padding(
                                               padding:
                                                   EdgeInsets.only(right: 8.0),
@@ -285,17 +283,11 @@ class _OrdersListState extends State<OrdersList> {
                                                   tracking(
                                                       controller:
                                                           _controller[index],
-                                                      // ..text = trackingData[
-                                                      //     'message'],
                                                       isTrue: listOfBool[index],
-                                                      // trackingData[
-                                                      //     'isprocessStateDone'],
                                                       size: size,
                                                       index: index,
-                                                      trackerState: status
-                                                      // trackingData[
-                                                      //     'processState']
-                                                      ),
+                                                      trackerState:
+                                                          stateList[index]),
                                                   if (index != 4)
                                                     Icon(
                                                       Icons.arrow_forward,
@@ -313,13 +305,25 @@ class _OrdersListState extends State<OrdersList> {
                                     alignment: Alignment.center,
                                     margin:
                                         EdgeInsets.only(left: size.width / 10),
-                                    child: ListView.builder(
-                                        scrollDirection: Axis.horizontal,
-                                        itemCount: listOfBool.length,
-                                        itemBuilder: (context, index) {
-                                          var trackingData = snapshot
-                                              .requireData
-                                              .data()['details'][index];
+                                    child: Row(
+                                      children: [
+                                        ...List.generate(listOfBool.length,
+                                            (index) {
+                                          OrderTracking orderTrackingState =
+                                              OrderTracking.fromFireStore(
+                                                  map: snapshot.requireData
+                                                          .data()['details']
+                                                      [index]);
+                                          if (temp == 0) {
+                                            for (int i = 0; i <= 4; i++) {
+                                              listOfBool[i] = snapshot
+                                                      .requireData
+                                                      .data()['details'][i]
+                                                  ['isprocessStateDone'];
+                                            }
+                                            temp = 1;
+                                          }
+
                                           return Padding(
                                             padding:
                                                 EdgeInsets.only(right: 8.0),
@@ -330,15 +334,15 @@ class _OrdersListState extends State<OrdersList> {
                                                 tracking(
                                                     controller:
                                                         _controller[index]
-                                                          ..text = trackingData[
-                                                              'message'],
-                                                    isTrue: false,
-                                                    // trackingData[
-                                                    //     'isprocessStateDone'],
+                                                          ..text =
+                                                              orderTrackingState
+                                                                  .message,
+                                                    isTrue: listOfBool[index],
                                                     size: size,
                                                     index: index,
-                                                    trackerState: trackingData[
-                                                        'processState']),
+                                                    trackerState:
+                                                        orderTrackingState
+                                                            .processState),
                                                 if (index != 4)
                                                   Icon(
                                                     Icons.arrow_forward,
@@ -348,7 +352,9 @@ class _OrdersListState extends State<OrdersList> {
                                               ],
                                             ),
                                           );
-                                        }),
+                                        })
+                                      ],
+                                    ),
                                   );
                                 }),
                             Row(
@@ -396,6 +402,7 @@ class _OrdersListState extends State<OrdersList> {
                                     ? null
                                     : () async {
                                         var send = [];
+                                        temp = 0;
                                         for (int i = 0;
                                             i < stateList.length;
                                             i++) {

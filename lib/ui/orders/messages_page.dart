@@ -109,7 +109,7 @@ class MessagesPage extends StatelessWidget {
                                                 userUrl:
                                                     userSnapshot.data.photoUrl,
                                                 producturl: productSnapshot
-                                                    .data.imageUrl),
+                                                    .data.imageUrl[0]),
                                           ));
                                     });
                               });

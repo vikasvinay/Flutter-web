@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ecommerce_admin/services/palette.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:paginate_firestore/paginate_firestore.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class AllProducts extends StatefulWidget {
   final String categoryName;
@@ -19,12 +20,47 @@ class AllProducts extends StatefulWidget {
 }
 
 class _AllProductsState extends State<AllProducts> {
+  final TextEditingController _typeAheadController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
         appBar: AppBar(
-          title: Text("All Products"),
+          centerTitle: true,
+          title: Container(
+            width: size.width / 2,
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            decoration: BoxDecoration(
+                color: Colors.white, borderRadius: BorderRadius.circular(20)),
+            child: TypeAheadField(
+              textFieldConfiguration: TextFieldConfiguration(
+                  controller: _typeAheadController,
+                  decoration: InputDecoration(
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.close),
+                        onPressed: () {
+                          _typeAheadController.clear();
+                        },
+                      ),
+                      labelText: 'Search by product name'),
+                  onSubmitted: (name) {}),
+              // ignore: missing_return
+              suggestionsCallback: (pattern) async {
+                if (pattern.length > 1) {
+                  return await _getSuggestions(pattern);
+                }
+              },
+              itemBuilder: (context, hint) {
+                return ListTile(
+                  title: Text("Product name: ${hint[0]}"),
+                  subtitle: Text("Category: ${hint[1]}"),
+                );
+              },
+              onSuggestionSelected: (suggestion) {
+                _typeAheadController.text = suggestion;
+              },
+            ),
+          ),
         ),
         body: PaginateFirestore(
           gridDelegate:
@@ -68,40 +104,25 @@ class _AllProductsState extends State<AllProducts> {
                   SizedBox(
                     height: 20,
                   ),
-                  if (!widget.fromOrders)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        MaterialButton(
-                          onPressed: () {
-                            FluroRoute.router.navigateTo(
-                                context, RouteNames.editProduct,
-                                routeSettings: RouteSettings(
-                                    arguments: data['product_id']));
-                          },
-                          child: Icon(Icons.edit),
-                        ),
-                        MaterialButton(
-                          onPressed: () async {
-                            await FirebaseFirestore.instance
-                                .collection('admin_products')
-                                .doc(data['product_id'])
-                                .delete();
-                          },
-                          child: Icon(Icons.delete),
-                        )
-                      ],
-                    ),
-                  if (widget.fromOrders)
-                    ElevatedButton(
-                        onPressed: () {
-                          FluroRoute.router.navigateTo(
-                              context, RouteNames.orderList,
-                              routeSettings:
-                                  RouteSettings(arguments: data['product_id']));
-                        },
-                        child: Text("Check Orders")),
-                  
+                  // if (!widget.fromOrders)
+                  //   MaterialButton(
+                  //     onPressed: () {
+                  //       FluroRoute.router.navigateTo(
+                  //           context, RouteNames.editProduct,
+                  //           routeSettings:
+                  //               RouteSettings(arguments: data['product_id']));
+                  //     },
+                  //     child: Icon(Icons.edit),
+                  //   ),
+                  // if (widget.fromOrders)
+                  //   ElevatedButton(
+                  //       onPressed: () {
+                  //         FluroRoute.router.navigateTo(
+                  //             context, RouteNames.orderList,
+                  //             routeSettings:
+                  //                 RouteSettings(arguments: data['product_id']));
+                  //       },
+                  //       child: Text("Check Orders")),
                   Spacer()
                 ],
               ),
@@ -111,7 +132,7 @@ class _AllProductsState extends State<AllProducts> {
   }
 
   Widget check(
-      {@required String image,
+      {@required List image,
       @required int price,
       @required String productName,
       @required String from,
@@ -133,9 +154,8 @@ class _AllProductsState extends State<AllProducts> {
           Container(
             height: 0.2.sh,
             margin: EdgeInsets.all(10),
-            decoration: BoxDecoration(
-                // color: Colors.amber,
-                borderRadius: BorderRadius.circular(20.r)),
+            decoration:
+                BoxDecoration(borderRadius: BorderRadius.circular(20.r)),
             child: Row(
               children: [
                 Container(
@@ -143,11 +163,9 @@ class _AllProductsState extends State<AllProducts> {
                   width: size.width / 10,
                   margin: EdgeInsets.only(left: 25, right: 30),
                   decoration: BoxDecoration(
-                      // color: Colors.deepOrangeAccent,
                       image: DecorationImage(
-                          fit: BoxFit.fill, image: NetworkImage(image)),
+                          fit: BoxFit.fill, image: NetworkImage(image.first)),
                       borderRadius: BorderRadius.circular(20.r)),
-                  // margin:EdgeInsets.all(10),
                 ),
                 Container(
                   alignment: Alignment.centerLeft,
@@ -158,7 +176,10 @@ class _AllProductsState extends State<AllProducts> {
                       Spacer(
                         flex: 1,
                       ),
-                      Text("$productName", style: TextStyle(fontWeight: FontWeight.bold),),
+                      Text(
+                        "$productName",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       Spacer(
                         flex: 2,
                       ),
@@ -174,8 +195,6 @@ class _AllProductsState extends State<AllProducts> {
           ),
           Container(
             height: 40.h,
-            // color: Colors.brown,
-            // margin:EdgeInsets.all(10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -189,14 +208,6 @@ class _AllProductsState extends State<AllProducts> {
                         width: 20,
                         height: 20,
                       )),
-                // CircleAvatar(
-                //     radius: 15,
-                //     backgroundColor: Palette.darkGreen,
-                //     child: Icon(
-                //       Icons.location_on_outlined,
-                //       color: Colors.white,
-                //       size: 16,
-                //     )),
                 if (icon2)
                   CircleAvatar(
                       radius: 15,
@@ -207,12 +218,6 @@ class _AllProductsState extends State<AllProducts> {
                         width: 20,
                         height: 20,
                       )),
-                // CircleAvatar(
-                //     radius: 15,
-                //     child: Icon(
-                //         Icons.local_drink_outlined,
-                //         color: Colors.white,
-                //         size: 16)),
                 if (icon3)
                   CircleAvatar(
                       radius: 15,
@@ -222,12 +227,6 @@ class _AllProductsState extends State<AllProducts> {
                         width: 20,
                         height: 20,
                       )),
-                // CircleAvatar(
-                //     radius: 15,
-                //     backgroundColor:
-                //         Palette.earthyColor,
-                //     child: Icon(Icons.beenhere_outlined,
-                //         color: Colors.white, size: 16)),
                 if (icon4)
                   CircleAvatar(
                       radius: 15,
@@ -238,14 +237,6 @@ class _AllProductsState extends State<AllProducts> {
                         width: 20,
                         height: 20,
                       )),
-                // CircleAvatar(
-                //     radius: 15,
-                //     backgroundColor: Palette.darkGreen,
-                //     child: Icon(
-                //       Icons.location_on_outlined,
-                //       color: Colors.white,
-                //       size: 16,
-                //     )),
                 if (icon5)
                   CircleAvatar(
                       radius: 15,
@@ -256,12 +247,6 @@ class _AllProductsState extends State<AllProducts> {
                         width: 20,
                         height: 20,
                       )),
-                // CircleAvatar(
-                //     radius: 15,
-                //     child: Icon(
-                //         Icons.local_drink_outlined,
-                //         color: Colors.white,
-                //         size: 16)),
                 if (icon6)
                   CircleAvatar(
                       radius: 15,
@@ -272,12 +257,6 @@ class _AllProductsState extends State<AllProducts> {
                         width: 20,
                         height: 20,
                       )),
-                // CircleAvatar(
-                //     radius: 15,
-                //     backgroundColor:
-                //         Palette.earthyColor,
-                //     child: Icon(Icons.beenhere_outlined,
-                //         color: Colors.white, size: 16)),
               ],
             ),
           ),
@@ -299,45 +278,128 @@ class _AllProductsState extends State<AllProducts> {
               ],
             ),
           ),
-          // Spacer(flex: 2,),
-          // Container(
-          //   // color: Colors.blueAccent,
-          //   height: 40.h,
-          //   child: Row(
-          //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          //     children: [
-          //       IconButton(
-          //           icon: Icon(
-          //             Icons.favorite_border,
-          //             color: Colors.cyan,
-          //           ),
-          //           onPressed: () {}),
-          //       OutlinedButton(
-          //         style: OutlinedButton.styleFrom(
-          //           shape: RoundedRectangleBorder(
-          //             borderRadius: BorderRadius.all(Radius.circular(10.r)),
-          //           ),
-          //         ),
-          //         autofocus: true,
-          //         child: Text("How is this better?"),
-          //         onPressed: () {},
-          //       ),
-          //       OutlinedButton(
-          //         style: OutlinedButton.styleFrom(
-          //           shape: RoundedRectangleBorder(
-          //             borderRadius: BorderRadius.all(Radius.circular(10.r)),
-          //           ),
-          //         ),
-          //         autofocus: true,
-          //         child: Text("Add to bag"),
-          //         onPressed: () {},
-          //       ),
-          //     ],
-          //   ),
-          // ),
-          // // Spacer(flex: 1,),
+          Spacer(
+            flex: 2,
+          ),
+          if (widget.fromOrders)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                height: size.height / 20,
+                width: size.width / 10,
+                child: FittedBox(
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10.r)),
+                      ),
+                    ),
+                    autofocus: true,
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.edit,
+                          size: 15,
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text(
+                          "Check Orders",
+                          style:
+                              TextStyle(fontSize: 10.sp, color: Colors.black),
+                        ),
+                      ],
+                    ),
+                    onPressed: () {
+                      FluroRoute.router.navigateTo(
+                          context, RouteNames.orderList,
+                          routeSettings: RouteSettings(arguments: id));
+                    },
+                  ),
+                ),
+              ),
+            ),
+          if (!widget.fromOrders)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                height: size.height / 20,
+                width: size.width / 10,
+                child: FittedBox(
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10.r)),
+                      ),
+                    ),
+                    autofocus: true,
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.edit,
+                          size: 12,
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text(
+                          "Edit",
+                          style:
+                              TextStyle(fontSize: 8.sp, color: Colors.black, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    onPressed: () {
+                      FluroRoute.router.navigateTo(
+                          context, RouteNames.editProduct,
+                          routeSettings: RouteSettings(arguments: id));
+                    },
+                  ),
+                ),
+              ),
+            ),
+          Spacer(
+            flex: 1,
+          ),
         ],
       ),
     );
+  }
+
+  _getSuggestions(String queary) async {
+    var name = await FirebaseFirestore.instance
+        .collection("admin_products")
+        .orderBy("search_name")
+        .startAt([queary.toLowerCase().trim()])
+        .where('product_category', isEqualTo: widget.categoryName)
+        .limit(3)
+        .get()
+        .then((e) {
+          return e.docs.map((doc) {
+            print(doc.id);
+            return [doc.data()["search_name"], doc.data()['product_category']];
+          }).toList();
+        });
+    print('---------$name');
+    return name;
+  }
+
+  getProductByName(String name) async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection("admin_products")
+        .where("search_name".toLowerCase().trim(),
+            isEqualTo: name.toLowerCase().trim())
+        .where('product_category', isEqualTo: widget.categoryName)
+        .get();
+    if (querySnapshot.docs.length == 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('No product by this name try another name')));
+    }
+    if (!widget.fromOrders) {
+      FluroRoute.router.navigateTo(context, RouteNames.editProduct,
+          routeSettings:
+              RouteSettings(arguments: querySnapshot.docs[0]['product_id']));
+    }
   }
 }

@@ -8,7 +8,7 @@ class ProductModel {
   bool safeEdge;
   bool suitable;
   bool cleaningBrush;
-  String imageUrl;
+  List imageUrl;
   String productName;
   String productCategory;
   String productCompany;
